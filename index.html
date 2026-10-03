@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NAMA KAMU — AI Video Maker</title>
+<meta name="description" content="Portofolio AI video: film pendek, music video, dan iklan.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#110e1a;
+  --panel:#1a1626;
+  --line:#2c2640;
+  --text:#efe9f4;
+  --muted:#9a91ad;
+  --accent:#ff3d6e;
+  --glow:#5ee0ff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--glow);outline-offset:3px}
+h1,h2,h3{font-family:'Syne',sans-serif;line-height:1.05;letter-spacing:-.02em}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+/* header */
+header{position:sticky;top:0;z-index:50;background:rgba(17,14,26,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;letter-spacing:-.02em}
+.logo i{font-style:normal;color:var(--accent)}
+nav{display:flex;gap:26px;align-items:center}
+nav a{font-size:.95rem;color:var(--muted);transition:color .2s}
+nav a:hover{color:var(--text)}
+.live{display:inline-flex;align-items:center;gap:8px;font-size:.85rem;border:1px solid var(--line);border-radius:99px;padding:5px 12px;color:var(--text)}
+.live::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 1.8s infinite}
+@keyframes pulse{50%{opacity:.25}}
+.burger{display:none;font-size:1.6rem;line-height:1}
+
+/* hero */
+.hero{padding:34px 0 10px}
+.stage{position:relative;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:var(--panel);border:1px solid var(--line);cursor:pointer;display:block;width:100%;text-align:left}
+.stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.stage .fallback,.card .fallback{position:absolute;inset:0;background:radial-gradient(circle at 25% 30%,#3b1f5c,transparent 55%),radial-gradient(circle at 80% 80%,#0f4a63,transparent 50%),#1a1626}
+.stage::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(17,14,26,.92) 0%,rgba(17,14,26,.15) 55%,transparent)}
+.stage .meta{position:absolute;left:0;right:0;bottom:0;padding:clamp(16px,4vw,40px);z-index:2;max-width:640px}
+.stage h1{font-size:clamp(1.8rem,5.5vw,3.6rem);margin-bottom:10px}
+.stage p{color:#d6cfe3;font-size:clamp(.9rem,2vw,1.05rem);margin-bottom:16px}
+.play{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:#fff;font-weight:700;padding:11px 20px;border-radius:99px;font-size:.95rem}
+.play svg{width:14px;height:14px;fill:#fff}
+.intro{margin:26px 0 8px;color:var(--muted);max-width:60ch}
+
+/* archive */
+section{padding:46px 0}
+.head{display:flex;align-items:end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:22px}
+.head h2{font-size:clamp(1.6rem,4vw,2.3rem)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{padding:7px 15px;border-radius:99px;border:1px solid var(--line);font-size:.9rem;color:var(--muted);transition:.2s}
+.tab:hover{color:var(--text);border-color:var(--muted)}
+.tab[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text);font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:22px}
+.card{text-align:left;display:block}
+.thumb{position:relative;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:var(--panel);border:1px solid var(--line);transition:border-color .2s,transform .2s}
+.thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.card:hover .thumb{border-color:var(--accent)}
+.thumb .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.7);font-size:.75rem;padding:2px 7px;border-radius:5px;z-index:2}
+.card h3{font-family:'DM Sans',sans-serif;font-size:1rem;letter-spacing:0;margin:12px 0 2px;font-weight:700}
+.card small{color:var(--muted);font-size:.85rem}
+.empty{color:var(--muted);padding:30px 0}
+
+/* about + connect */
+.two{display:grid;grid-template-columns:1.2fr 1fr;gap:50px}
+.about p{color:#cfc7de;margin-bottom:14px;max-width:58ch}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.tools span{border:1px solid var(--line);border-radius:8px;padding:5px 11px;font-size:.85rem;color:var(--muted)}
+.connect{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:28px}
+.connect h3{font-size:1.5rem;margin-bottom:8px}
+.connect p{color:var(--muted);margin-bottom:18px;font-size:.95rem}
+.links{display:flex;flex-direction:column}
+.links a{display:flex;justify-content:space-between;padding:12px 0;border-top:1px solid var(--line);transition:color .2s}
+.links a:hover{color:var(--accent)}
+.links span:last-child{color:var(--muted);font-size:.9rem}
+
+footer{border-top:1px solid var(--line);padding:26px 0;color:var(--muted);font-size:.85rem}
+footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(8,6,14,.92);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+.modal.open{display:flex}
+.modal .box{width:100%;max-width:1000px}
+.modal .frame{aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.modal iframe{width:100%;height:100%;border:0}
+.modal .note{padding:24px;text-align:center;color:var(--muted)}
+.modal .cap{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:14px}
+.modal .cap h3{font-family:'DM Sans',sans-serif;font-size:1.05rem;letter-spacing:0}
+.close{border:1px solid var(--line);border-radius:99px;padding:7px 16px;font-size:.9rem;flex-shrink:0}
+.close:hover{border-color:var(--text)}
+
+@media(max-width:760px){
+  .burger{display:block}
+  nav{position:absolute;top:60px;left:0;right:0;flex-direction:column;align-items:flex-start;gap:0;background:var(--bg);border-bottom:1px solid var(--line);padding:6px 20px 14px;display:none}
+  nav.open{display:flex}
+  nav a{padding:11px 0;width:100%}
+  .two{grid-template-columns:1fr;gap:34px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a href="#top" class="logo">NAMA<i>.</i>KAMU</a>
+    <button class="burger" id="burger" aria-label="Buka menu" aria-expanded="false">☰</button>
+    <nav id="nav">
+      <a href="#karya">Karya</a>
+      <a href="#tentang">Tentang</a>
+      <a href="#kontak">Kontak</a>
+      <span class="live">Terima proyek</span>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap hero">
+    <button class="stage" id="stage" aria-label="Putar video unggulan"></button>
+    <p class="intro">AI video maker. Saya membuat film pendek, music video, dan iklan dengan alat AI generatif, dari ide sampai edit akhir.</p>
+  </div>
+
+  <section id="karya">
+    <div class="wrap">
+      <div class="head">
+        <h2>Karya</h2>
+        <div class="tabs" id="tabs"></div>
+      </div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <section id="tentang">
+    <div class="wrap two">
+      <div class="about">
+        <h2 style="font-size:clamp(1.6rem,4vw,2.3rem);margin-bottom:18px">Tentang</h2>
+        <p>Halo, saya NAMA KAMU. Saya membuat video dengan AI untuk brand, musisi, dan kreator yang butuh visual sinematik tanpa produksi besar.</p>
+        <p>Tulis 1–2 kalimat lagi di sini: gaya visual favorit, pengalaman, atau klien yang pernah dikerjakan.</p>
+        <div class="tools">
+          <span>Runway</span><span>Kling</span><span>Veo</span><span>Midjourney</span><span>ComfyUI</span><span>CapCut</span><span>DaVinci Resolve</span>
+        </div>
+      </div>
+      <div class="connect" id="kontak">
+        <h3>Ayo kerja bareng</h3>
+        <p>Kirim brief singkat lewat email atau DM. Biasanya saya balas dalam 1–2 hari.</p>
+        <div class="links">
+          <a href="mailto:email@kamu.com"><span>Email</span><span>email@kamu.com</span></a>
+          <a href="https://instagram.com/usernamekamu" target="_blank" rel="noopener"><span>Instagram</span><span>@usernamekamu</span></a>
+          <a href="https://youtube.com/@usernamekamu" target="_blank" rel="noopener"><span>YouTube</span><span>@usernamekamu</span></a>
+          <a href="https://tiktok.com/@usernamekamu" target="_blank" rel="noopener"><span>TikTok</span><span>@usernamekamu</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 NAMA KAMU</span>
+    <span>Dibuat dengan AI</span>
+  </div>
+</footer>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Pemutar video">
+  <div class="box">
+    <div class="frame" id="frame"></div>
+    <div class="cap"><h3 id="mtitle"></h3><button class="close" id="close">Tutup</button></div>
+  </div>
+</div>
+
+<script>
+/* ============ EDIT BAGIAN INI ============
+   id    = kode video YouTube (bagian setelah v= pada link)
+           contoh: youtube.com/watch?v=abc123XYZ  ->  id: "abc123XYZ"
+   cat   = kategori (bebas, akan jadi tab filter otomatis)
+   dur   = durasi (opsional)
+   Video pertama dipakai sebagai video unggulan di atas.
+======================================== */
+const VIDEOS = [
+  { id:"VIDEO_ID_1", title:"Judul Karya Unggulan", desc:"Satu kalimat tentang video ini: konsep, alat, atau hasilnya.", cat:"Film pendek", dur:"2:14" },
+  { id:"VIDEO_ID_2", title:"Judul Video 2", desc:"", cat:"Music video", dur:"3:20" },
+  { id:"VIDEO_ID_3", title:"Judul Video 3", desc:"", cat:"Iklan", dur:"0:30" },
+  { id:"VIDEO_ID_4", title:"Judul Video 4", desc:"", cat:"Film pendek", dur:"4:05" },
+  { id:"VIDEO_ID_5", title:"Judul Video 5", desc:"", cat:"Shorts", dur:"0:45" },
+  { id:"VIDEO_ID_6", title:"Judul Video 6", desc:"", cat:"Music video", dur:"2:58" }
+];
+/* ========================================= */
+
+const $ = s => document.querySelector(s);
+const thumbUrl = id => `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+const isPlaceholder = id => id.startsWith("VIDEO_ID");
+
+function thumbHTML(v){
+  return `<div class="fallback"></div>` + (isPlaceholder(v.id) ? "" :
+    `<img src="${thumbUrl(v.id)}" alt="" loading="lazy" onerror="this.remove()">`);
+}
+
+/* hero */
+const f = VIDEOS[0];
+$("#stage").innerHTML = `${thumbHTML(f)}
+  <div class="meta">
+    <h1>${f.title}</h1>
+    <p>${f.desc}</p>
+    <span class="play"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg>Tonton</span>
+  </div>`;
+$("#stage").onclick = () => openVideo(f);
+
+/* filter + grid */
+const cats = ["Semua", ...new Set(VIDEOS.map(v => v.cat))];
+let active = "Semua";
+function renderTabs(){
+  $("#tabs").innerHTML = cats.map(c =>
+    `<button class="tab" aria-pressed="${c===active}" data-c="${c}">${c}</button>`).join("");
+  document.querySelectorAll(".tab").forEach(b => b.onclick = () => { active = b.dataset.c; renderTabs(); renderGrid(); });
+}
+function renderGrid(){
+  const list = VIDEOS.filter(v => active==="Semua" || v.cat===active);
+  $("#grid").innerHTML = list.length ? list.map(v => `
+    <button class="card" data-id="${v.id}">
+      <div class="thumb">${thumbHTML(v)}${v.dur?`<span class="dur">${v.dur}</span>`:""}</div>
+      <h3>${v.title}</h3><small>${v.cat}</small>
+    </button>`).join("") : `<p class="empty">Belum ada video di kategori ini.</p>`;
+  document.querySelectorAll(".card").forEach(c => c.onclick = () => openVideo(VIDEOS.find(v => v.id===c.dataset.id)));
+}
+renderTabs(); renderGrid();
+
+/* modal */
+const modal = $("#modal");
+function openVideo(v){
+  $("#mtitle").textContent = v.title;
+  $("#frame").innerHTML = isPlaceholder(v.id)
+    ? `<p class="note">Ini masih contoh. Ganti <b>id</b> video di bagian VIDEOS dengan kode video YouTube kamu.</p>`
+    : `<iframe src="https://www.youtube.com/embed/${v.id}?autoplay=1&rel=0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen title="${v.title}"></iframe>`;
+  modal.classList.add("open");
+  $("#close").focus();
+}
+function closeVideo(){ modal.classList.remove("open"); $("#frame").innerHTML = ""; }
+$("#close").onclick = closeVideo;
+modal.onclick = e => { if(e.target===modal) closeVideo(); };
+document.addEventListener("keydown", e => { if(e.key==="Escape") closeVideo(); });
+
+/* mobile menu */
+$("#burger").onclick = () => {
+  const open = $("#nav").classList.toggle("open");
+  $("#burger").setAttribute("aria-expanded", open);
+};
+document.querySelectorAll("#nav a").forEach(a => a.onclick = () => $("#nav").classList.remove("open"));
+</script>
+</body>
+</html>
