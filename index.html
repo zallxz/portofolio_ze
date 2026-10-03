@@ -5,129 +5,167 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>izesaki — AI Video Portfolio</title>
 <meta name="description" content="AI video portfolio: short movies, music videos, ADs, and shorts.">
+<meta name="theme-color" content="#08080b">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
+<noscript><style>.wordmark{opacity:1!important}</style></noscript>
 <style>
 :root{
-  --bg:#110e1a;
-  --panel:#1a1626;
-  --line:#2c2640;
-  --text:#efe9f4;
-  --muted:#9a91ad;
-  --accent:#ff3d6e;
-  --glow:#5ee0ff;
+  --bg:#08080b;
+  --panel:#111116;
+  --line:#26262e;
+  --text:#f1f1f3;
+  --muted:#8c8c99;
+  --red:#dc3a2a;
+  --red-soft:#ff7b6b;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
-a{color:inherit;text-decoration:none}
-button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
-:focus-visible{outline:2px solid var(--glow);outline-offset:3px}
-h1,h2,h3{font-family:'Syne',sans-serif;line-height:1.05;letter-spacing:-.02em}
-.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+html{scroll-behavior:smooth;background:var(--bg)}
+body{background:var(--bg);color:var(--text);font-family:'Archivo',system-ui,sans-serif;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:left}
+:focus-visible{outline:3px solid var(--text);outline-offset:3px}
+::selection{background:var(--red);color:#fff}
 
-/* header */
-header{position:sticky;top:0;z-index:50;background:rgba(17,14,26,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.bar{display:flex;align-items:center;justify-content:space-between;height:60px}
-.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;letter-spacing:-.02em}
-.logo i{font-style:normal;color:var(--accent)}
-nav{display:flex;gap:26px}
-nav a{font-size:.95rem;color:var(--muted);transition:color .2s}
-nav a:hover{color:var(--text)}
+/* masthead */
+.masthead{padding:clamp(20px,4vw,44px) 20px 36px}
+.wordmark{
+  color:var(--text);
+  font-weight:800;
+  font-stretch:125%;
+  font-size:min(18.5vw,270px);
+  line-height:.95;
+  letter-spacing:-.05em;
+  white-space:nowrap;
+  overflow:hidden;
+  opacity:0;
+}
+.ready .wordmark{opacity:1;animation:widen 1.7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes widen{
+  from{font-stretch:62%;letter-spacing:-.015em}
+  to{font-stretch:125%;letter-spacing:-.05em}
+}
+.sub{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:18px 32px;margin-top:clamp(14px,2.5vw,28px)}
+.sub p{font-size:clamp(1.05rem,2.2vw,1.45rem);font-weight:450;line-height:1.3;max-width:34ch}
+.jump{font-weight:600;white-space:nowrap;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:5px;transition:color .2s}
+.jump:hover{color:var(--red)}
 
-/* title */
-.top{padding:64px 0 10px}
-.top h1{font-size:clamp(2rem,6vw,3.6rem);max-width:20ch}
+/* filters */
+.filters{
+  position:sticky;top:0;z-index:30;
+  display:flex;gap:26px;
+  padding:14px 20px;
+  overflow-x:auto;scrollbar-width:none;
+  background:rgba(8,8,11,.92);border-bottom:1px solid var(--line);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+}
+.filters::-webkit-scrollbar{display:none}
+.f{flex:none;font-size:.98rem;font-weight:500;color:var(--muted);padding:2px 0;transition:color .2s}
+.f:hover{color:var(--text)}
+.f[aria-pressed="true"]{color:var(--text);font-weight:650;text-decoration:underline;text-decoration-color:var(--red);text-decoration-thickness:2px;text-underline-offset:7px}
+.f sup{font-size:.62em;margin-left:3px;font-weight:500;color:var(--muted)}
 
-/* work */
-#work{padding:34px 0 60px}
-.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
-.tab{padding:7px 15px;border-radius:99px;border:1px solid var(--line);font-size:.9rem;color:var(--muted);transition:.2s}
-.tab:hover{color:var(--text);border-color:var(--muted)}
-.tab[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text);font-weight:700}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:22px}
-.card{text-align:left;display:block}
-.thumb{position:relative;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:var(--panel);border:1px solid var(--line);transition:border-color .2s}
-.thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.fallback{position:absolute;inset:0;background:radial-gradient(circle at 25% 30%,#3b1f5c,transparent 55%),radial-gradient(circle at 80% 80%,#0f4a63,transparent 50%),#1a1626}
-.card:hover .thumb{border-color:var(--accent)}
-.dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.7);font-size:.75rem;padding:2px 7px;border-radius:5px;z-index:2}
-.card h3{font-family:'DM Sans',sans-serif;font-size:1rem;letter-spacing:0;margin:12px 0 2px;font-weight:700}
-.card small{color:var(--muted);font-size:.85rem}
-.empty{color:var(--muted);padding:30px 0}
+/* wall of work */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,440px),1fr));gap:6px}
+.tile{position:relative;display:block;width:100%;aspect-ratio:16/9;overflow:hidden;background:var(--panel);color:var(--text)}
+.tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,11,.9),rgba(8,8,11,0) 55%)}
+.cap{position:absolute;left:16px;right:76px;bottom:14px;display:flex;flex-direction:column;gap:2px}
+.cap b{font-weight:650;font-size:1.05rem;line-height:1.2}
+.cap i{font-style:normal;font-size:.82rem;opacity:.8}
+.len{position:absolute;right:16px;bottom:14px;font-size:.82rem;font-variant-numeric:tabular-nums}
+.tile[disabled]{cursor:default;background:var(--panel);color:var(--muted);box-shadow:inset 0 0 0 1px var(--line)}
+.tile[disabled] .scrim{display:none}
+.tile:focus-visible{outline-color:var(--text);outline-offset:-4px}
+.play{position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;background:var(--red);opacity:0;transform:scale(.7);transition:opacity .25s,transform .25s}
+.play::after{content:"";position:absolute;left:25px;top:20px;border-style:solid;border-width:12px 0 12px 19px;border-color:transparent transparent transparent #fff}
+.tile{isolation:isolate}
+.tile img{z-index:0}
+.tile:not([disabled])::after{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;box-shadow:inset 0 0 0 0 var(--red);transition:box-shadow .2s}
+.scrim{z-index:2}
+.cap,.len,.play{z-index:3}
+@media (hover:hover){
+  .tile:not([disabled]):hover::after,.tile:not([disabled]):focus-visible::after{box-shadow:inset 0 0 0 3px var(--red)}
+  .tile:not([disabled]):hover .play{opacity:1;transform:none}
+}
+.tile:not([disabled]):focus-visible .play{opacity:1;transform:none}
 
 /* contact */
-#contact{border-top:1px solid var(--line);padding:44px 0 56px}
-#contact h2{font-size:1.6rem;margin-bottom:18px}
-.links{max-width:420px}
-.links a{display:flex;justify-content:space-between;padding:13px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);transition:color .2s}
-.links a:hover{color:var(--accent)}
-.links span:last-child{color:var(--muted)}
-
-footer{border-top:1px solid var(--line);padding:22px 0;color:var(--muted);font-size:.85rem}
-
-/* modal */
-.modal{position:fixed;inset:0;background:rgba(8,6,14,.92);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
-.modal.open{display:flex}
-.modal .box{width:100%;max-width:1000px}
-.modal .frame{aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center}
-.modal iframe{width:100%;height:100%;border:0}
-.modal .note{padding:24px;text-align:center;color:var(--muted)}
-.modal .cap{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:14px}
-.modal .cap h3{font-family:'DM Sans',sans-serif;font-size:1.05rem;letter-spacing:0}
-.close{border:1px solid var(--line);border-radius:99px;padding:7px 16px;font-size:.9rem;flex-shrink:0}
-.close:hover{border-color:var(--text)}
-
-@media(max-width:600px){
-  .top{padding-top:40px}
-  nav{gap:18px}
+.contact{
+  display:flex;justify-content:space-between;align-items:center;gap:16px;
+  margin-top:6px;padding:16px 20px;
+  background:var(--red);color:#fff;text-decoration:none;
+  transition:background .2s,color .2s;
 }
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+.contact span{font-size:.95rem;font-weight:500}
+.contact b{font-size:1.25rem;font-weight:800;font-stretch:125%;letter-spacing:-.02em;line-height:1.1}
+.contact:hover,.contact:focus-visible{background:var(--text);color:var(--red)}
+.contact:focus-visible{outline-color:#fff;outline-offset:-4px}
+.foot{display:flex;justify-content:space-between;gap:16px;padding:16px 20px 22px;font-size:.9rem;color:var(--muted)}
+.foot a{text-underline-offset:4px;transition:color .2s}
+.foot a:hover{color:var(--text)}
+
+/* screening room */
+.player{position:fixed;inset:0;z-index:100;background:#000;color:var(--text);display:none;flex-direction:column;padding:16px 20px 18px}
+.player.open{display:flex}
+.ptop,.pbottom{display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
+.ptop{align-items:flex-start;font-size:.9rem;color:rgba(255,255,255,.75)}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;padding:12px 0}
+.frame{width:min(100%,calc((100vh - 170px)*16/9));aspect-ratio:16/9;background:#000}
+@supports (height:100dvh){.frame{width:min(100%,calc((100dvh - 170px)*16/9))}}
+.frame iframe{display:block;width:100%;height:100%;border:0}
+.pbottom h3{font-size:1.1rem;font-weight:650;line-height:1.25}
+.pbottom p{font-size:.85rem;color:rgba(255,255,255,.7)}
+.pnav{display:flex;gap:22px;flex:none}
+.u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:5px;transition:color .2s}
+.u:hover{color:var(--red-soft)}
+.player :focus-visible{outline-color:var(--red-soft)}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .ready .wordmark{animation:none}
+  *{transition:none!important}
+}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="wrap bar">
-    <a href="#top" class="logo">IZESAKI<i>.</i></a>
-    <nav>
-      <a href="#work">Work</a>
-      <a href="#contact">Contact</a>
-    </nav>
+<header class="masthead" id="top">
+  <h1 class="wordmark">izesaki</h1>
+  <div class="sub">
+    <p>AI Video Portfolio: Short Movies, Music Videos, ADs, and Shorts</p>
+    <a class="jump" href="#contact">Contact</a>
   </div>
 </header>
 
-<main id="top">
-  <div class="wrap top">
-    <h1>AI Video Portfolio: Short Movies, Music Videos, ADs, and Shorts</h1>
-  </div>
-
-  <section id="work">
-    <div class="wrap">
-      <div class="tabs" id="tabs"></div>
-      <div class="grid" id="grid"></div>
-    </div>
-  </section>
-
-  <section id="contact">
-    <div class="wrap">
-      <h2>Contact</h2>
-      <div class="links">
-        <a href="https://x.com/izesaki" target="_blank" rel="noopener"><span>X</span><span>@izesaki</span></a>
-      </div>
-    </div>
-  </section>
+<main>
+  <nav class="filters" id="filters" aria-label="Filter work by category"></nav>
+  <div class="grid" id="grid"></div>
 </main>
 
-<footer>
-  <div class="wrap">© 2026 izesaki</div>
+<a class="contact" id="contact" href="https://x.com/izesaki" target="_blank" rel="noopener">
+  <span>Contact on X</span>
+  <b>@izesaki</b>
+</a>
+
+<footer class="foot">
+  <span>© 2026 izesaki</span>
+  <a href="#top">Back to top</a>
 </footer>
 
-<div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Video player">
-  <div class="box">
-    <div class="frame" id="frame"></div>
-    <div class="cap"><h3 id="mtitle"></h3><button class="close" id="close">Close</button></div>
+<div class="player" id="player" role="dialog" aria-modal="true" aria-label="Video player">
+  <div class="ptop">
+    <span id="pcount"></span>
+    <button class="u" id="pclose">Close</button>
+  </div>
+  <div class="stage"><div class="frame" id="frame"></div></div>
+  <div class="pbottom">
+    <div><h3 id="ptitle"></h3><p id="pmeta"></p></div>
+    <div class="pnav">
+      <button class="u" id="pprev">Previous</button>
+      <button class="u" id="pnext">Next</button>
+    </div>
   </div>
 </div>
 
@@ -135,8 +173,10 @@ footer{border-top:1px solid var(--line);padding:22px 0;color:var(--muted);font-s
 /* ============ EDIT THIS PART ============
    id    = YouTube video ID (the part after v= in the link)
            example: youtube.com/watch?v=abc123XYZ  ->  id: "abc123XYZ"
-   cat   = category (any name, becomes a filter tab automatically)
+   cat   = category (any name, becomes a filter automatically)
    dur   = duration (optional)
+   An id that starts with VIDEO_ID shows as "Coming soon".
+   Every line must end with a comma.
 ======================================== */
 const VIDEOS = [
   { id:"21vqGvPlYnA", title:"Handphone Ad", cat:"AD", dur:"1:58" },
@@ -157,45 +197,105 @@ const VIDEOS = [
 /* ========================================= */
 
 const $ = s => document.querySelector(s);
-const thumbUrl = id => `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
-const isPlaceholder = id => id.startsWith("VIDEO_ID");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const soon = v => v.id.startsWith("VIDEO_ID");
 
-function thumbHTML(v){
-  return `<div class="fallback"></div>` + (isPlaceholder(v.id) ? "" :
-    `<img src="${thumbUrl(v.id)}" alt="" loading="lazy" onerror="this.remove()">`);
-}
+/* page load: let the wordmark widen once the font is ready */
+Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))])
+  .then(() => document.documentElement.classList.add("ready"));
 
+/* filters + grid */
 const cats = ["All", ...new Set(VIDEOS.map(v => v.cat))];
 let active = "All";
-function renderTabs(){
-  $("#tabs").innerHTML = cats.map(c =>
-    `<button class="tab" aria-pressed="${c===active}" data-c="${c}">${c}</button>`).join("");
-  document.querySelectorAll(".tab").forEach(b => b.onclick = () => { active = b.dataset.c; renderTabs(); renderGrid(); });
-}
-function renderGrid(){
-  const list = VIDEOS.filter(v => active==="All" || v.cat===active);
-  $("#grid").innerHTML = list.length ? list.map(v => `
-    <button class="card" data-id="${v.id}">
-      <div class="thumb">${thumbHTML(v)}${v.dur?`<span class="dur">${v.dur}</span>`:""}</div>
-      <h3>${v.title}</h3><small>${v.cat}</small>
-    </button>`).join("") : `<p class="empty">No videos in this category yet.</p>`;
-  document.querySelectorAll(".card").forEach(c => c.onclick = () => openVideo(VIDEOS.find(v => v.id===c.dataset.id)));
-}
-renderTabs(); renderGrid();
+let queue = [];
 
-const modal = $("#modal");
-function openVideo(v){
-  $("#mtitle").textContent = v.title;
-  $("#frame").innerHTML = isPlaceholder(v.id)
-    ? `<p class="note">This is a placeholder. Replace the video <b>id</b> in the VIDEOS list with your YouTube video ID.</p>`
-    : `<iframe src="https://www.youtube.com/embed/${v.id}?autoplay=1&rel=0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen title="${v.title}"></iframe>`;
-  modal.classList.add("open");
-  $("#close").focus();
+function renderFilters(){
+  $("#filters").innerHTML = cats.map(c => {
+    const n = c === "All" ? VIDEOS.length : VIDEOS.filter(v => v.cat === c).length;
+    return `<button class="f" aria-pressed="${c===active}" data-c="${esc(c)}">${esc(c)}<sup>${n}</sup></button>`;
+  }).join("");
 }
-function closeVideo(){ modal.classList.remove("open"); $("#frame").innerHTML = ""; }
-$("#close").onclick = closeVideo;
-modal.onclick = e => { if(e.target===modal) closeVideo(); };
-document.addEventListener("keydown", e => { if(e.key==="Escape") closeVideo(); });
+
+function tileHTML(v, i){
+  if (soon(v)) {
+    return `<button class="tile" disabled aria-label="${esc(v.title)}, coming soon">
+      <span class="cap"><b>${esc(v.title)}</b><i>${esc(v.cat)}</i></span>
+      <span class="len">Coming soon</span>
+    </button>`;
+  }
+  const sd = `https://img.youtube.com/vi/${v.id}/sddefault.jpg`;
+  const hq = `https://img.youtube.com/vi/${v.id}/hqdefault.jpg`;
+  return `<button class="tile" data-i="${i}" aria-label="Play ${esc(v.title)}">
+    <img src="${sd}" data-fb="${hq}" alt="" loading="lazy"
+      onload="if(this.naturalWidth<200)this.src=this.dataset.fb"
+      onerror="this.onerror=null;this.src=this.dataset.fb">
+    <span class="scrim"></span>
+    <span class="cap"><b>${esc(v.title)}</b><i>${esc(v.cat)}</i></span>
+    ${v.dur ? `<span class="len">${esc(v.dur)}</span>` : ""}
+    <span class="play" aria-hidden="true"></span>
+  </button>`;
+}
+
+function renderGrid(){
+  const list = VIDEOS.map((v, i) => i).filter(i => active === "All" || VIDEOS[i].cat === active);
+  queue = list.filter(i => !soon(VIDEOS[i]));
+  $("#grid").innerHTML = list.map(i => tileHTML(VIDEOS[i], i)).join("");
+}
+
+$("#filters").addEventListener("click", e => {
+  const b = e.target.closest(".f");
+  if (!b) return;
+  active = b.dataset.c;
+  renderFilters();
+  renderGrid();
+});
+$("#grid").addEventListener("click", e => {
+  const t = e.target.closest(".tile[data-i]");
+  if (t) openAt(+t.dataset.i);
+});
+renderFilters();
+renderGrid();
+
+/* screening room */
+const player = $("#player");
+let cur = -1, lastFocus = null;
+
+function openAt(i){
+  const v = VIDEOS[i];
+  if (!player.classList.contains("open")) lastFocus = document.activeElement;
+  cur = i;
+  $("#frame").innerHTML = `<iframe src="https://www.youtube.com/embed/${encodeURIComponent(v.id)}?autoplay=1&rel=0&playsinline=1" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen title="${esc(v.title)}"></iframe>`;
+  $("#ptitle").textContent = v.title;
+  $("#pmeta").textContent = v.cat + (v.dur ? ", " + v.dur : "");
+  const pos = queue.indexOf(i);
+  $("#pcount").textContent = pos > -1 ? `${pos + 1} of ${queue.length}` : "";
+  const multi = queue.length > 1;
+  $("#pprev").hidden = !multi;
+  $("#pnext").hidden = !multi;
+  player.classList.add("open");
+  document.body.style.overflow = "hidden";
+  $("#pclose").focus();
+}
+function closePlayer(){
+  player.classList.remove("open");
+  $("#frame").innerHTML = "";
+  document.body.style.overflow = "";
+  if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
+}
+function step(d){
+  if (queue.length < 2) return;
+  const pos = queue.indexOf(cur);
+  openAt(queue[(pos + d + queue.length) % queue.length]);
+}
+$("#pclose").onclick = closePlayer;
+$("#pprev").onclick = () => step(-1);
+$("#pnext").onclick = () => step(1);
+document.addEventListener("keydown", e => {
+  if (!player.classList.contains("open")) return;
+  if (e.key === "Escape") closePlayer();
+  if (e.key === "ArrowLeft") step(-1);
+  if (e.key === "ArrowRight") step(1);
+});
 </script>
 </body>
 </html>
