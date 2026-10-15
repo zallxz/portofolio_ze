@@ -102,6 +102,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .contact b{font-size:1.25rem;font-weight:800;font-stretch:125%;letter-spacing:-.02em;line-height:1.1}
 .contact:hover,.contact:focus-visible{background:var(--text);color:var(--red)}
 .contact:focus-visible{outline-color:#fff;outline-offset:-4px}
+.contact.alt{margin-top:0;background:var(--panel);color:var(--text);border-top:1px solid var(--line)}
+.contact.alt:hover,.contact.alt:focus-visible{background:var(--red);color:#fff}
 .foot{display:flex;justify-content:space-between;gap:16px;padding:16px 20px 22px;font-size:.9rem;color:var(--muted)}
 .foot a{text-underline-offset:4px;transition:color .2s}
 .foot a:hover{color:var(--text)}
@@ -112,9 +114,12 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .ptop,.pbottom{display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
 .ptop{align-items:flex-start;font-size:.9rem;color:rgba(255,255,255,.75)}
 .stage{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;padding:12px 0}
-.frame{width:min(100%,calc((100vh - 170px)*16/9));aspect-ratio:16/9;background:#000}
-@supports (height:100dvh){.frame{width:min(100%,calc((100dvh - 170px)*16/9))}}
-.frame iframe{display:block;width:100%;height:100%;border:0}
+.frame{--r:1.7778;width:min(100%,calc((100vh - 170px)*var(--r)));aspect-ratio:var(--r);background:#000}
+@supports (height:100dvh){.frame{width:min(100%,calc((100dvh - 170px)*var(--r)))}}
+.frame iframe,.frame video{display:block;width:100%;height:100%;border:0;background:#000}
+.frame video{object-fit:contain}
+.frame.embed{width:min(100%,550px);height:100%;aspect-ratio:auto;overflow:auto}
+.frame .wait{display:grid;place-items:center;height:100%;color:var(--muted);font-size:.95rem}
 .pbottom h3{font-size:1.1rem;font-weight:650;line-height:1.25}
 .pbottom p{font-size:.85rem;color:rgba(255,255,255,.7)}
 .pnav{display:flex;gap:22px;flex:none}
@@ -148,6 +153,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
   <span>Contact on X</span>
   <b>@izesaki</b>
 </a>
+<a class="contact alt" href="https://www.tiktok.com/@zeesai_" target="_blank" rel="noopener">
+  <span>Aikoze on TikTok</span>
+  <b>@zeesai_</b>
+</a>
 
 <footer class="foot">
   <span>© 2026 izesaki</span>
@@ -171,34 +180,58 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 
 <script>
 /* ============ EDIT THIS PART ============
-   id    = YouTube video ID (the part after v= in the link)
-           example: youtube.com/watch?v=abc123XYZ  ->  id: "abc123XYZ"
+   Each line is one video from an X (Twitter) post.
+   x     = link to the X post that has the video
+           example: x:"https://x.com/izesaki/status/1234567890"
+   title = name shown on the tile
    cat   = category (any name, becomes a filter automatically)
-   dur   = duration (optional)
-   An id that starts with VIDEO_ID shows as "Coming soon".
+   (duration is read from the video automatically)
+   A line with x:"" shows as "Coming soon".
    Every line must end with a comma.
 ======================================== */
 const VIDEOS = [
-  { id:"21vqGvPlYnA", title:"Handphone Ad", cat:"AD", dur:"1:58" },
-  { id:"E0n2AU86D34", title:"BLUE WIND PARFUM", cat:"AD", dur:"1:01" },
-  { id:"kkFGPSRpT68", title:"C1 - SEE IT DIFFERENTLY", cat:"AD", dur:"0:58" },
-  { id:"VOXjREDl_OA", title:"Street Fighter", cat:"Shorts", dur:"0:25" },
-  { id:"L6zBV83yLi4", title:"ALL EYES TO KALIMANTAN", cat:"Shorts", dur:"1:50" },
-  { id:"TNFQy56zkww", title:"Choose Peace AMV", cat:"Music Video", dur:"1:01" },
-  { id:"i8XSkWiKx48", title:"Lost Control", cat:"Shorts", dur:"0:54" },
-  { id:"2YnF93hnFbc", title:"THE LAST PIECE", cat:"Shorts", dur:"2:05" },
-  { id:"67msbFQDxKo", title:"WW3", cat:"Shorts", dur:"0:27" },
-  { id:"EnKrvqR3bGc", title:"REQUIRES A", cat:"Shorts", dur:"0:58" },
-  { id:"DvOWld2J4tA", title:"New World", cat:"Shorts", dur:"0:42" },
-  { id:"dDlLH0PcSo4", title:"Buy Now", cat:"AD", dur:"0:30" },
-  { id:"1jaj_Y8qdBU", title:"Hazl UGC", cat:"AD", dur:"0:43" },
-  { id:"VIDEO_ID_5", title:"(upcoming)", cat:"Achievement", dur:"40:05" },
+  { x:"https://x.com/izesaki/status/2100299004689215532", title:"Handphone Ad", cat:"AD" },
+  { x:"https://x.com/izesaki/status/2099817993312354664", title:"BLUE WIND PARFUM", cat:"AD" },
+  { x:"https://x.com/izesaki/status/2099904225027543415", title:"C1 - SEE IT DIFFERENTLY", cat:"AD" },
+  { x:"https://x.com/izesaki/status/2109753291492270490", title:"ALL EYES TO KALIMANTAN", cat:"Shorts" },
+  { x:"https://x.com/izesaki/status/2098903195804406080", title:"Choose Peace AMV", cat:"Music Video" },
+  { x:"https://x.com/izesaki/status/2101740798647935385", title:"THE LAST PIECE", cat:"Shorts" },
+  { x:"https://x.com/izesaki/status/2097610555377021145", title:"WW3", cat:"Shorts" },
+  { x:"https://x.com/izesaki/status/2099565966283948502", title:"REQUIRES A", cat:"Shorts" },
+  { x:"https://x.com/izesaki/status/2107517350857916420", title:"AizePhone", cat:"AD" },
+  { x:"https://x.com/izesaki/status/2106090261277515884", title:"Hazl UGC", cat:"AD" },
+  { x:"https://x.com/izesaki/status/2110455906077188266", title:"Best UGC on Openart", cat:"Achievement" },
 ];
 /* ========================================= */
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const soon = v => v.id.startsWith("VIDEO_ID");
+/* X (Twitter) support: read the post link, then fetch thumbnail + video file */
+const X_RE = /(?:x|twitter)\.com\/([^\/?#]+)\/status\/(\d+)/i;
+VIDEOS.forEach(v => {
+  const m = String(v.x || "").match(X_RE);
+  if (m) { v.user = m[1]; v.tid = m[2]; }
+});
+const soon = v => !v.tid;
+const xCache = {};
+const fmtDur = s => { s = Math.round(s); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
+function getX(v){
+  if (!xCache[v.tid]) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 8000);
+    xCache[v.tid] = fetch(`https://api.fxtwitter.com/${encodeURIComponent(v.user)}/status/${v.tid}`, { signal: ctrl.signal })
+      .then(r => r.ok ? r.json() : null)
+      .then(j => {
+        const t = j && (j.tweet || j.status);
+        const vid = t && t.media && t.media.videos && t.media.videos[0];
+        if (!vid || !vid.url) return null;
+        return { url: vid.url, thumb: vid.thumbnail_url || "", w: vid.width, h: vid.height, dur: vid.duration };
+      })
+      .catch(() => null)
+      .finally(() => clearTimeout(timer));
+  }
+  return xCache[v.tid];
+}
 
 /* page load: let the wordmark widen once the font is ready */
 Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))])
@@ -223,15 +256,11 @@ function tileHTML(v, i){
       <span class="len">Coming soon</span>
     </button>`;
   }
-  const sd = `https://img.youtube.com/vi/${v.id}/sddefault.jpg`;
-  const hq = `https://img.youtube.com/vi/${v.id}/hqdefault.jpg`;
   return `<button class="tile" data-i="${i}" aria-label="Play ${esc(v.title)}">
-    <img src="${sd}" data-fb="${hq}" alt="" loading="lazy"
-      onload="if(this.naturalWidth<200)this.src=this.dataset.fb"
-      onerror="this.onerror=null;this.src=this.dataset.fb">
+    <img alt="" hidden referrerpolicy="no-referrer">
     <span class="scrim"></span>
     <span class="cap"><b>${esc(v.title)}</b><i>${esc(v.cat)}</i></span>
-    ${v.dur ? `<span class="len">${esc(v.dur)}</span>` : ""}
+    <span class="len">${esc(v.dur || "")}</span>
     <span class="play" aria-hidden="true"></span>
   </button>`;
 }
@@ -240,6 +269,16 @@ function renderGrid(){
   const list = VIDEOS.map((v, i) => i).filter(i => active === "All" || VIDEOS[i].cat === active);
   queue = list.filter(i => !soon(VIDEOS[i]));
   $("#grid").innerHTML = list.map(i => tileHTML(VIDEOS[i], i)).join("");
+  list.forEach(i => {
+    const v = VIDEOS[i];
+    if (soon(v)) return;
+    getX(v).then(info => {
+      const tile = $(`.tile[data-i="${i}"]`);
+      if (!tile || !info) return;
+      if (info.thumb) { const img = tile.querySelector("img"); img.src = info.thumb; img.hidden = false; }
+      if (!v.dur && info.dur) { v.dur = fmtDur(info.dur); tile.querySelector(".len").textContent = v.dur; }
+    });
+  });
 }
 
 $("#filters").addEventListener("click", e => {
@@ -264,7 +303,21 @@ function openAt(i){
   const v = VIDEOS[i];
   if (!player.classList.contains("open")) lastFocus = document.activeElement;
   cur = i;
-  $("#frame").innerHTML = `<iframe src="https://www.youtube.com/embed/${encodeURIComponent(v.id)}?autoplay=1&rel=0&playsinline=1" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen title="${esc(v.title)}"></iframe>`;
+  const fr = $("#frame");
+  fr.className = "frame";
+  fr.style.removeProperty("--r");
+  fr.innerHTML = `<div class="wait">Loading</div>`;
+  getX(v).then(info => {
+    if (cur !== i || !player.classList.contains("open")) return;
+    if (info) {
+      if (info.w && info.h) fr.style.setProperty("--r", (info.w / info.h).toFixed(4));
+      fr.innerHTML = `<video src="${esc(info.url)}" poster="${esc(info.thumb)}" controls autoplay playsinline preload="auto"></video>`;
+      if (!v.dur && info.dur) { v.dur = fmtDur(info.dur); $("#pmeta").textContent = v.cat + ", " + v.dur; }
+    } else {
+      fr.className = "frame embed";
+      fr.innerHTML = `<iframe src="https://platform.twitter.com/embed/Tweet.html?id=${v.tid}&theme=dark&dnt=true" allow="autoplay; fullscreen" allowfullscreen title="${esc(v.title)}"></iframe>`;
+    }
+  });
   $("#ptitle").textContent = v.title;
   $("#pmeta").textContent = v.cat + (v.dur ? ", " + v.dur : "");
   const pos = queue.indexOf(i);
