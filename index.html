@@ -164,6 +164,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .pact{display:flex;align-items:center;gap:12px;flex:none}
 .pext{font-size:.85rem;color:var(--cinema-muted);text-underline-offset:4px}
 .pext:hover{color:var(--cinema-text)}
+.paward{display:inline-block;margin-top:2px;font-size:.85rem;color:var(--cinema-text);text-underline-offset:4px;text-decoration-thickness:1px}
+.paward[hidden]{display:none}
 
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
@@ -199,7 +201,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 
   <div class="subs">
     <p>Independent filmmaker working with AI. Short films, music videos, and ads that would normally need a full crew.</p>
-    <p>Winner of <a href="https://x.com/izesaki/status/2110455906077188266" target="_blank" rel="noopener">Best UGC on OpenArt</a>.</p>
   </div>
 </header>
 
@@ -217,7 +218,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 <div class="player" id="player" role="dialog" aria-modal="true" aria-labelledby="ptitle" aria-hidden="true">
  <div class="pbox" id="pbox">
   <div class="pbar">
-    <div><h2 id="ptitle"></h2><p id="pmeta"></p></div>
+    <div><h2 id="ptitle"></h2><p id="pmeta"></p><a class="paward" id="paward" href="#" target="_blank" rel="noopener" hidden></a></div>
     <div class="pact">
       <a class="pext" id="pext" href="#" target="_blank" rel="noopener">Open on X</a>
       <button class="ib" id="pclose" aria-label="Close video"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
@@ -241,6 +242,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
    The first video plays silently in the header, so put your best work first.
    Duration and date are read from the post automatically.
    A line with x:"" shows as "Coming soon".
+   award = optional, shown under the title on the tile
+   proof = optional link to the post that proves the award, shown in the player
 ======================================== */
 const VIDEOS = [
   { x:"https://x.com/izesaki/status/2115509092802502699", title:"Another Life", cat:"Short films" },
@@ -253,7 +256,8 @@ const VIDEOS = [
   { x:"https://x.com/izesaki/status/2111076371724488750", title:"Aizento Time Machine", cat:"Ads" },
   { x:"https://x.com/izesaki/status/2109753291492270490", title:"All Eyes to Kalimantan", cat:"Short films" },
   { x:"https://x.com/izesaki/status/2106090261277515884", title:"Hazl", cat:"Ads" },
-  { x:"https://x.com/izesaki/status/2102663694824186267", title:"AIZE Remnant", cat:"Ads" },
+  { x:"https://x.com/izesaki/status/2102663694824186267", title:"AIZE Remnant", cat:"Ads",
+    award:"Best UGC on OpenArt", proof:"https://x.com/izesaki/status/2110455906077188266" },
   { x:"https://x.com/izesaki/status/2101740798647935385", title:"The Last Piece", cat:"Short films" },
   { x:"https://x.com/izesaki/status/2100299004689215532", title:"Handphone", cat:"Ads" },
   { x:"https://x.com/izesaki/status/2099904225027543415", title:"C1: See It Differently", cat:"Ads" },
@@ -383,7 +387,7 @@ function tileHTML(v, i){
   }
   return `<button class="tile" data-i="${i}" aria-label="Play ${esc(v.title)}">
     <span class="thumb"><img alt="" hidden loading="lazy" referrerpolicy="no-referrer"></span>
-    <span class="meta"><b>${esc(v.title)}</b><span class="dur">${v.dur || ""}</span><span class="sub">${esc(subline(v))}</span></span>
+    <span class="meta"><b>${esc(v.title)}</b><span class="dur">${v.dur || ""}</span><span class="sub">${esc(subline(v) + (v.award ? ", " + v.award : ""))}</span></span>
   </button>`;
 }
 
@@ -463,6 +467,10 @@ function openAt(i){
   $("#ptitle").textContent = v.title;
   $("#pmeta").textContent = subline(v) + (v.dur ? ", " + v.dur : "");
   $("#pext").href = v.x;
+  const aw = $("#paward");
+  aw.hidden = !v.award;
+  aw.textContent = v.award ? "Winner, " + v.award : "";
+  if (v.proof) aw.href = v.proof; else aw.removeAttribute("href");
   const pos = queue.indexOf(i);
   $("#pcount").textContent = pos > -1 ? `${pos + 1} / ${queue.length}` : "";
   const multi = queue.length > 1;
