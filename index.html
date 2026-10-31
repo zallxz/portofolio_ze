@@ -102,29 +102,36 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .foot a{text-underline-offset:4px}
 .foot a:hover{color:var(--text)}
 
-/* player */
+/* player: title bar, video and nav stay together as one block */
 .player{
   position:fixed;inset:0;z-index:100;background:#000;
-  display:grid;grid-template-rows:auto minmax(0,1fr) auto;
+  display:flex;align-items:center;justify-content:center;
+  padding:12px var(--pad);
   opacity:0;visibility:hidden;transition:opacity .25s,visibility 0s .25s;
 }
 .player.open{opacity:1;visibility:visible;transition:opacity .25s}
-.pbar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 12px 12px var(--pad)}
+.pbox{--r:1.7778;display:flex;flex-direction:column;width:min(100%,calc((100vh - 140px)*var(--r)))}
+@supports (height:100dvh){.pbox{width:min(100%,calc((100dvh - 140px)*var(--r)))}}
+.pbar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-bottom:8px}
 .pbar h3{font-size:1rem;font-weight:600;line-height:1.25}
 .pbar p{font-size:.85rem;color:var(--muted)}
-.stage{display:flex;align-items:center;justify-content:center;min-height:0;padding:0 var(--pad)}
-.frame{--r:1.7778;width:min(100%,calc((100vh - 150px)*var(--r)));aspect-ratio:var(--r);background:#000}
-@supports (height:100dvh){.frame{width:min(100%,calc((100dvh - 150px)*var(--r)))}}
+.frame{width:100%;aspect-ratio:var(--r);background:#000}
 .frame iframe,.frame video{display:block;width:100%;height:100%;border:0;background:#000}
 .frame video{object-fit:contain}
-.frame.embed{width:min(100%,550px);height:100%;aspect-ratio:auto;overflow:auto}
 .frame .wait{display:grid;place-items:center;height:100%;color:var(--muted);font-size:.9rem}
-.pnav{display:flex;justify-content:center;align-items:center;gap:8px;padding:10px 0 14px}
+.pbox.embed{width:min(100%,550px)}
+.pbox.embed .frame{aspect-ratio:auto;height:calc(100vh - 140px);overflow:auto}
+@supports (height:100dvh){.pbox.embed .frame{height:calc(100dvh - 140px)}}
+.pnav{display:flex;justify-content:center;align-items:center;gap:8px;padding-top:6px}
 .pnav span{min-width:4.5em;text-align:center;font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .ib{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;color:var(--muted);transition:color .2s,background-color .2s}
 .ib:hover{color:var(--text);background:#1c1c1c}
 .ib svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
 .ib[hidden]{display:none}
+#pclose{margin-right:-11px}
+.pact{display:flex;align-items:center;gap:12px;flex:none}
+.pext{font-size:.85rem;color:var(--muted);text-underline-offset:4px}
+.pext:hover{color:var(--text)}
 
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
@@ -161,16 +168,21 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 </footer>
 
 <div class="player" id="player" role="dialog" aria-modal="true" aria-labelledby="ptitle" aria-hidden="true">
+ <div class="pbox" id="pbox">
   <div class="pbar">
     <div><h3 id="ptitle"></h3><p id="pmeta"></p></div>
-    <button class="ib" id="pclose" aria-label="Close video"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div class="pact">
+      <a class="pext" id="pext" href="#" target="_blank" rel="noopener">Open on X</a>
+      <button class="ib" id="pclose" aria-label="Close video"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
   </div>
-  <div class="stage" id="stage"><div class="frame" id="frame"></div></div>
+  <div class="frame" id="frame"></div>
   <div class="pnav">
     <button class="ib" id="pprev" aria-label="Previous video"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
     <span id="pcount"></span>
     <button class="ib" id="pnext" aria-label="Next video"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
   </div>
+ </div>
 </div>
 
 <script>
@@ -212,7 +224,7 @@ VIDEOS.forEach(v => {
 });
 const soon = v => !v.tid;
 const single = c => c.replace(/s$/, "");
-const xCache = {};
+const xCache = {}, xInfo = {};
 const fmtDur = s => { s = Math.round(s); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
 function getX(v){
   if (!xCache[v.tid]) {
@@ -227,6 +239,7 @@ function getX(v){
         return { url: vid.url, thumb: vid.thumbnail_url || "", w: vid.width, h: vid.height, dur: vid.duration };
       })
       .catch(() => null)
+      .then(info => { xInfo[v.tid] = info; return info; })
       .finally(() => clearTimeout(timer));
   }
   return xCache[v.tid];
@@ -294,27 +307,35 @@ renderGrid();
 const player = $("#player");
 let cur = -1, lastFocus = null;
 
+function embed(v){
+  const fr = $("#frame");
+  $("#pbox").classList.add("embed");
+  $("#pbox").style.removeProperty("--r");
+  fr.innerHTML = `<iframe src="https://platform.twitter.com/embed/Tweet.html?id=${v.tid}&theme=dark&dnt=true" allow="autoplay; fullscreen" allowfullscreen title="${esc(v.title)}"></iframe>`;
+}
+function mount(v, info){
+  if (!info) return embed(v);
+  const fr = $("#frame");
+  if (info.w && info.h) $("#pbox").style.setProperty("--r", (info.w / info.h).toFixed(4));
+  const vid = document.createElement("video");
+  vid.controls = true;
+  vid.playsInline = true;
+  vid.preload = "auto";
+  vid.setAttribute("referrerpolicy", "no-referrer");
+  if (info.thumb) vid.poster = info.thumb;
+  vid.addEventListener("error", () => { if (VIDEOS[cur] === v) embed(v); }, { once: true });
+  vid.src = info.url;
+  fr.replaceChildren(vid);
+  vid.play().catch(() => {}); /* if the browser blocks autoplay, the play button is still there */
+  if (!v.dur && info.dur) { v.dur = fmtDur(info.dur); $("#pmeta").textContent = single(v.cat) + ", " + v.dur; }
+}
 function openAt(i){
   const v = VIDEOS[i];
   if (!player.classList.contains("open")) lastFocus = document.activeElement;
   cur = i;
-  const fr = $("#frame");
-  fr.className = "frame";
-  fr.style.removeProperty("--r");
-  fr.innerHTML = `<div class="wait">Loading video</div>`;
-  getX(v).then(info => {
-    if (cur !== i || !player.classList.contains("open")) return;
-    if (info) {
-      if (info.w && info.h) fr.style.setProperty("--r", (info.w / info.h).toFixed(4));
-      fr.innerHTML = `<video src="${esc(info.url)}" poster="${esc(info.thumb)}" controls autoplay playsinline preload="auto"></video>`;
-      if (!v.dur && info.dur) { v.dur = fmtDur(info.dur); $("#pmeta").textContent = single(v.cat) + ", " + v.dur; }
-    } else {
-      fr.className = "frame embed";
-      fr.innerHTML = `<iframe src="https://platform.twitter.com/embed/Tweet.html?id=${v.tid}&theme=dark&dnt=true" allow="autoplay; fullscreen" allowfullscreen title="${esc(v.title)}"></iframe>`;
-    }
-  });
   $("#ptitle").textContent = v.title;
   $("#pmeta").textContent = single(v.cat) + (v.dur ? ", " + v.dur : "");
+  $("#pext").href = v.x;
   const pos = queue.indexOf(i);
   $("#pcount").textContent = pos > -1 ? `${pos + 1} / ${queue.length}` : "";
   const multi = queue.length > 1;
@@ -325,6 +346,18 @@ function openAt(i){
   player.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
   $("#pclose").focus();
+
+  const fr = $("#frame");
+  $("#pbox").classList.remove("embed");
+  $("#pbox").style.removeProperty("--r");
+  if (v.tid in xInfo) {
+    mount(v, xInfo[v.tid]); /* already loaded: start right away, inside the click */
+  } else {
+    fr.innerHTML = `<div class="wait">Loading video</div>`;
+    getX(v).then(info => {
+      if (cur === i && player.classList.contains("open")) mount(v, info);
+    });
+  }
 }
 function closePlayer(){
   player.classList.remove("open");
@@ -339,7 +372,7 @@ function step(d){
   openAt(queue[(pos + d + queue.length) % queue.length]);
 }
 $("#pclose").onclick = closePlayer;
-$("#stage").addEventListener("click", e => { if (e.target.id === "stage") closePlayer(); });
+player.addEventListener("click", e => { if (e.target === player) closePlayer(); });
 $("#pprev").onclick = () => step(-1);
 $("#pnext").onclick = () => step(1);
 document.addEventListener("keydown", e => {
