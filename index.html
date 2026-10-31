@@ -119,9 +119,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .frame iframe,.frame video{display:block;width:100%;height:100%;border:0;background:#000}
 .frame video{object-fit:contain}
 .frame .wait{display:grid;place-items:center;height:100%;color:var(--muted);font-size:.9rem}
-.pbox.embed{width:min(100%,550px)}
-.pbox.embed .frame{aspect-ratio:auto;height:calc(100vh - 140px);overflow:auto}
-@supports (height:100dvh){.pbox.embed .frame{height:calc(100dvh - 140px)}}
+.fail{position:relative;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;text-align:center;background:var(--raise) center/cover}
+.fail::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,.75)}
+.fail p,.fail button{position:relative;max-width:32ch;font-size:.95rem}
+.retry{padding:9px 18px;border:1px solid var(--muted);border-radius:999px;font-weight:600}
+.retry:hover{border-color:var(--text)}
 .pnav{display:flex;justify-content:center;align-items:center;gap:8px;padding-top:6px}
 .pnav span{min-width:4.5em;text-align:center;font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .ib{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;color:var(--muted);transition:color .2s,background-color .2s}
@@ -226,6 +228,16 @@ const soon = v => !v.tid;
 const single = c => c.replace(/s$/, "");
 const xCache = {}, xInfo = {};
 const fmtDur = s => { s = Math.round(s); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
+/* phones get a lighter file so playback starts faster */
+function pickUrl(vid){
+  const mp4 = (vid.variants || []).filter(x => x.url && /mp4/i.test(x.content_type || x.url) && x.bitrate);
+  if (!mp4.length) return vid.url;
+  mp4.sort((a, b) => a.bitrate - b.bitrate);
+  const small = Math.min(screen.width, screen.height) * (window.devicePixelRatio || 1) < 1100;
+  const cap = small ? 2500000 : Infinity;
+  const fit = mp4.filter(x => x.bitrate <= cap);
+  return (fit.length ? fit[fit.length - 1] : mp4[0]).url;
+}
 function getX(v){
   if (!xCache[v.tid]) {
     const ctrl = new AbortController();
@@ -236,10 +248,14 @@ function getX(v){
         const t = j && (j.tweet || j.status);
         const vid = t && t.media && t.media.videos && t.media.videos[0];
         if (!vid || !vid.url) return null;
-        return { url: vid.url, thumb: vid.thumbnail_url || "", w: vid.width, h: vid.height, dur: vid.duration };
+        return { url: pickUrl(vid), thumb: vid.thumbnail_url || "", w: vid.width, h: vid.height, dur: vid.duration };
       })
       .catch(() => null)
-      .then(info => { xInfo[v.tid] = info; return info; })
+      .then(info => {
+        if (info) xInfo[v.tid] = info;
+        else delete xCache[v.tid]; /* allow a fresh try next time */
+        return info;
+      })
       .finally(() => clearTimeout(timer));
   }
   return xCache[v.tid];
@@ -307,23 +323,33 @@ renderGrid();
 const player = $("#player");
 let cur = -1, lastFocus = null;
 
-function embed(v){
+function fail(v){
   const fr = $("#frame");
-  $("#pbox").classList.add("embed");
-  $("#pbox").style.removeProperty("--r");
-  fr.innerHTML = `<iframe src="https://platform.twitter.com/embed/Tweet.html?id=${v.tid}&theme=dark&dnt=true" allow="autoplay; fullscreen" allowfullscreen title="${esc(v.title)}"></iframe>`;
+  const info = xInfo[v.tid];
+  fr.innerHTML = `<div class="fail"${info && info.thumb ? ` style="background-image:url('${esc(info.thumb)}')"` : ""}>
+    <p>This video didn't load. Check your connection and try again.</p>
+    <button class="retry" type="button">Try again</button>
+  </div>`;
+  fr.querySelector(".retry").onclick = () => { delete xInfo[v.tid]; delete xCache[v.tid]; openAt(VIDEOS.indexOf(v)); };
 }
 function mount(v, info){
-  if (!info) return embed(v);
+  if (!info) return fail(v);
   const fr = $("#frame");
   if (info.w && info.h) $("#pbox").style.setProperty("--r", (info.w / info.h).toFixed(4));
   const vid = document.createElement("video");
   vid.controls = true;
   vid.playsInline = true;
   vid.preload = "auto";
-  vid.setAttribute("referrerpolicy", "no-referrer");
   if (info.thumb) vid.poster = info.thumb;
-  vid.addEventListener("error", () => { if (VIDEOS[cur] === v) embed(v); }, { once: true });
+  let retried = false;
+  vid.addEventListener("error", () => {
+    if (VIDEOS[cur] !== v) return;
+    if (!retried) {               /* one quiet retry, picking up where it stopped */
+      retried = true;
+      const t = vid.currentTime;
+      setTimeout(() => { vid.load(); vid.currentTime = t; vid.play().catch(() => {}); }, 800);
+    } else fail(v);
+  });
   vid.src = info.url;
   fr.replaceChildren(vid);
   vid.play().catch(() => {}); /* if the browser blocks autoplay, the play button is still there */
@@ -348,7 +374,6 @@ function openAt(i){
   $("#pclose").focus();
 
   const fr = $("#frame");
-  $("#pbox").classList.remove("embed");
   $("#pbox").style.removeProperty("--r");
   if (v.tid in xInfo) {
     mount(v, xInfo[v.tid]); /* already loaded: start right away, inside the click */
