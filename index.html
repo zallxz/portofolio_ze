@@ -3,39 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>izesaki — AI Video Portfolio</title>
-<meta name="description" content="AI video portfolio: short movies, music videos, ADs.">
-<meta name="theme-color" content="#08080b">
+<title>izesaki · AI filmmaker</title>
+<meta name="description" content="Independent AI filmmaker making short films, music videos, and ads.">
+<meta name="theme-color" content="#000000">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
 <noscript><style>.wordmark{opacity:1!important}</style></noscript>
 <style>
 :root{
-  --bg:#08080b;
-  --panel:#111116;
-  --line:#26262e;
-  --text:#f1f1f3;
-  --muted:#8c8c99;
-  --red:#dc3a2a;
-  --red-soft:#ff7b6b;
+  --bg:#000;
+  --raise:#121212;
+  --line:#262626;
+  --text:#ececec;
+  --muted:#8e8e8e;
+  --pad:clamp(16px,3vw,40px);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;background:var(--bg)}
 body{background:var(--bg);color:var(--text);font-family:'Archivo',system-ui,sans-serif;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
 a{color:inherit}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:left}
-:focus-visible{outline:3px solid var(--text);outline-offset:3px}
-::selection{background:var(--red);color:#fff}
+:focus-visible{outline:2px solid var(--text);outline-offset:3px}
+::selection{background:var(--text);color:var(--bg)}
 
 /* masthead */
-.masthead{padding:clamp(20px,4vw,44px) 20px 36px}
+.masthead{padding:clamp(20px,4vw,44px) var(--pad) clamp(40px,6vw,72px)}
 .wordmark{
-  color:var(--text);
   font-weight:800;
   font-stretch:125%;
   font-size:min(18.5vw,270px);
-  line-height:.95;
+  line-height:.9;
   letter-spacing:-.05em;
   white-space:nowrap;
   overflow:hidden;
@@ -46,80 +44,87 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
   from{font-stretch:62%;letter-spacing:-.015em}
   to{font-stretch:125%;letter-spacing:-.05em}
 }
-.sub{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:18px 32px;margin-top:clamp(14px,2.5vw,28px)}
-.sub p{font-size:clamp(1.05rem,2.2vw,1.45rem);font-weight:450;line-height:1.3;max-width:34ch}
-.jump{font-weight:600;white-space:nowrap;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:5px;transition:color .2s}
-.jump:hover{color:var(--red)}
+.intro{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px 48px;align-items:end;margin-top:clamp(20px,3vw,36px)}
+.bio{font-size:clamp(1.15rem,2.1vw,1.5rem);font-weight:450;line-height:1.35;max-width:36ch}
+.bio + .bio{margin-top:.8em;font-size:1rem;color:var(--muted);max-width:52ch}
+.bio a{text-underline-offset:4px;text-decoration-thickness:1px}
+.bio a:hover{color:var(--text)}
+.links{display:flex;flex-direction:column;gap:4px;text-align:right;font-weight:600}
+.links a{text-decoration:none}
+.links a:hover{text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1.5px}
+@media (max-width:640px){
+  .intro{grid-template-columns:1fr}
+  .links{flex-direction:row;gap:20px;text-align:left}
+}
 
 /* filters */
 .filters{
   position:sticky;top:0;z-index:30;
-  display:flex;gap:26px;
-  padding:14px 20px;
+  display:flex;gap:28px;
+  padding:14px var(--pad);
   overflow-x:auto;scrollbar-width:none;
-  background:rgba(8,8,11,.92);border-bottom:1px solid var(--line);
+  background:rgba(0,0,0,.88);border-bottom:1px solid var(--line);
   backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
 }
 .filters::-webkit-scrollbar{display:none}
-.f{flex:none;font-size:.98rem;font-weight:500;color:var(--muted);padding:2px 0;transition:color .2s}
+.f{flex:none;font-weight:500;color:var(--muted);padding:2px 0}
 .f:hover{color:var(--text)}
-.f[aria-pressed="true"]{color:var(--text);font-weight:650;text-decoration:underline;text-decoration-color:var(--red);text-decoration-thickness:2px;text-underline-offset:7px}
-.f sup{font-size:.62em;margin-left:3px;font-weight:500;color:var(--muted)}
+.f[aria-pressed="true"]{color:var(--text);text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:7px}
+.f span{margin-left:6px;font-size:.8em;font-variant-numeric:tabular-nums;color:var(--muted)}
 
-/* wall of work */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,440px),1fr));gap:6px}
-.tile{position:relative;display:block;width:100%;aspect-ratio:16/9;overflow:hidden;background:var(--panel);color:var(--text)}
-.tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,11,.9),rgba(8,8,11,0) 55%)}
-.cap{position:absolute;left:16px;right:76px;bottom:14px;display:flex;flex-direction:column;gap:2px}
-.cap b{font-weight:650;font-size:1.05rem;line-height:1.2}
-.cap i{font-style:normal;font-size:.82rem;opacity:.8}
-.len{position:absolute;right:16px;bottom:14px;font-size:.82rem;font-variant-numeric:tabular-nums}
-.tile[disabled]{cursor:default;background:var(--panel);color:var(--muted);box-shadow:inset 0 0 0 1px var(--line)}
-.tile[disabled] .scrim{display:none}
-.tile:focus-visible{outline-color:var(--text);outline-offset:-4px}
-.play{position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;background:var(--red);opacity:0;transform:scale(.7);transition:opacity .25s,transform .25s}
-.play::after{content:"";position:absolute;left:25px;top:20px;border-style:solid;border-width:12px 0 12px 19px;border-color:transparent transparent transparent #fff}
-.tile{isolation:isolate}
-.tile img{z-index:0}
-.tile:not([disabled])::after{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;box-shadow:inset 0 0 0 0 var(--red);transition:box-shadow .2s}
-.scrim{z-index:2}
-.cap,.len,.play{z-index:3}
-@media (hover:hover){
-  .tile:not([disabled]):hover::after,.tile:not([disabled]):focus-visible::after{box-shadow:inset 0 0 0 3px var(--red)}
-  .tile:not([disabled]):hover .play{opacity:1;transform:none}
+/* work */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(min(100%,360px),1fr));
+  gap:36px 16px;
+  padding:28px var(--pad) 0;
 }
-.tile:not([disabled]):focus-visible .play{opacity:1;transform:none}
+@media (min-width:900px){ .tile.lead{grid-column:span 2} .tile.lead b{font-size:1.35rem} }
+.tile{display:flex;flex-direction:column;gap:10px;width:100%}
+.thumb{position:relative;display:block;aspect-ratio:16/9;overflow:hidden;background:var(--raise)}
+.thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;transition:opacity .25s}
+.thumb em{position:absolute;inset:0;display:grid;place-items:center;font-style:normal;font-size:.9rem;color:var(--muted)}
+.meta{display:flex;justify-content:space-between;align-items:baseline;gap:16px}
+.meta b{font-weight:600;font-size:1.05rem;line-height:1.25}
+.meta i{flex:none;font-style:normal;font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.tile[disabled]{cursor:default}
+.tile[disabled] b{color:var(--muted)}
+.tile:focus-visible{outline:none}
+.tile:focus-visible .thumb{outline:2px solid var(--text);outline-offset:3px}
+@media (hover:hover){
+  .tile:not([disabled]):hover img{opacity:1}
+  .tile:not([disabled]):hover b{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:4px}
+}
+.tile:not([disabled]):focus-visible img{opacity:1}
 
-/* contact */
-.contact{margin-top:6px;padding:10px 20px;background:var(--red);color:#fff}
-.contact a{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:7px 0;color:inherit;text-decoration:none}
-.contact span{font-size:.95rem;font-weight:500}
-.contact b{font-size:1.25rem;font-weight:800;font-stretch:125%;letter-spacing:-.02em;line-height:1.1;text-decoration:underline;text-decoration-color:transparent;text-decoration-thickness:2px;text-underline-offset:5px;transition:text-decoration-color .2s}
-.contact a:hover b,.contact a:focus-visible b{text-decoration-color:#fff}
-.contact a:focus-visible{outline:3px solid #fff;outline-offset:2px}
-.foot{display:flex;justify-content:space-between;gap:16px;padding:16px 20px 22px;font-size:.9rem;color:var(--muted)}
-.foot a{text-underline-offset:4px;transition:color .2s}
+/* footer */
+.foot{display:flex;justify-content:space-between;gap:16px;margin-top:clamp(72px,10vw,120px);padding:20px var(--pad) 24px;border-top:1px solid var(--line);font-size:.9rem;color:var(--muted)}
+.foot a{text-underline-offset:4px}
 .foot a:hover{color:var(--text)}
 
-/* screening room */
-.player{position:fixed;inset:0;z-index:100;background:#000;color:var(--text);display:none;flex-direction:column;padding:16px 20px 18px}
-.player.open{display:flex}
-.ptop,.pbottom{display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
-.ptop{align-items:flex-start;font-size:.9rem;color:rgba(255,255,255,.75)}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;padding:12px 0}
-.frame{--r:1.7778;width:min(100%,calc((100vh - 170px)*var(--r)));aspect-ratio:var(--r);background:#000}
-@supports (height:100dvh){.frame{width:min(100%,calc((100dvh - 170px)*var(--r)))}}
+/* player */
+.player{
+  position:fixed;inset:0;z-index:100;background:#000;
+  display:grid;grid-template-rows:auto minmax(0,1fr) auto;
+  opacity:0;visibility:hidden;transition:opacity .25s,visibility 0s .25s;
+}
+.player.open{opacity:1;visibility:visible;transition:opacity .25s}
+.pbar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 12px 12px var(--pad)}
+.pbar h3{font-size:1rem;font-weight:600;line-height:1.25}
+.pbar p{font-size:.85rem;color:var(--muted)}
+.stage{display:flex;align-items:center;justify-content:center;min-height:0;padding:0 var(--pad)}
+.frame{--r:1.7778;width:min(100%,calc((100vh - 150px)*var(--r)));aspect-ratio:var(--r);background:#000}
+@supports (height:100dvh){.frame{width:min(100%,calc((100dvh - 150px)*var(--r)))}}
 .frame iframe,.frame video{display:block;width:100%;height:100%;border:0;background:#000}
 .frame video{object-fit:contain}
 .frame.embed{width:min(100%,550px);height:100%;aspect-ratio:auto;overflow:auto}
-.frame .wait{display:grid;place-items:center;height:100%;color:var(--muted);font-size:.95rem}
-.pbottom h3{font-size:1.1rem;font-weight:650;line-height:1.25}
-.pbottom p{font-size:.85rem;color:rgba(255,255,255,.7)}
-.pnav{display:flex;gap:22px;flex:none}
-.u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:5px;transition:color .2s}
-.u:hover{color:var(--red-soft)}
-.player :focus-visible{outline-color:var(--red-soft)}
+.frame .wait{display:grid;place-items:center;height:100%;color:var(--muted);font-size:.9rem}
+.pnav{display:flex;justify-content:center;align-items:center;gap:8px;padding:10px 0 14px}
+.pnav span{min-width:4.5em;text-align:center;font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.ib{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;color:var(--muted);transition:color .2s,background-color .2s}
+.ib:hover{color:var(--text);background:#1c1c1c}
+.ib svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.ib[hidden]{display:none}
 
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
@@ -132,9 +137,16 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 
 <header class="masthead" id="top">
   <h1 class="wordmark">izesaki</h1>
-  <div class="sub">
-    <p>AI Video Portfolio: Short Movies, Music Videos, ADs</p>
-    <a class="jump" href="#contact">Contact</a>
+  <div class="intro">
+    <div>
+      <p class="bio">Independent filmmaker working with AI. I make short films, music videos, and ads, telling stories that would normally need a full crew.</p>
+      <p class="bio">Winner of <a href="https://x.com/izesaki/status/2110455906077188266" target="_blank" rel="noopener">Best UGC on OpenArt</a>. Open to commissions and collaborations.</p>
+    </div>
+    <nav class="links" aria-label="Contact">
+      <a href="https://x.com/izesaki" target="_blank" rel="noopener">X</a>
+      <a href="https://www.instagram.com/izesaki" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.tiktok.com/@zeesai_" target="_blank" rel="noopener">TikTok</a>
+    </nav>
   </div>
 </header>
 
@@ -143,78 +155,63 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
   <div class="grid" id="grid"></div>
 </main>
 
-<div class="contact" id="contact">
-  <a href="https://x.com/izesaki" target="_blank" rel="noopener">
-    <span>Contact on X</span>
-    <b>@izesaki</b>
-  </a>
-  <a href="https://www.tiktok.com/@zeesai_" target="_blank" rel="noopener">
-    <span>Aikoze on TikTok</span>
-    <b>@zeesai_</b>
-  </a>
-</div>
-
 <footer class="foot">
   <span>© 2026 izesaki</span>
   <a href="#top">Back to top</a>
 </footer>
 
-<div class="player" id="player" role="dialog" aria-modal="true" aria-label="Video player">
-  <div class="ptop">
-    <span id="pcount"></span>
-    <button class="u" id="pclose">Close</button>
-  </div>
-  <div class="stage"><div class="frame" id="frame"></div></div>
-  <div class="pbottom">
+<div class="player" id="player" role="dialog" aria-modal="true" aria-labelledby="ptitle" aria-hidden="true">
+  <div class="pbar">
     <div><h3 id="ptitle"></h3><p id="pmeta"></p></div>
-    <div class="pnav">
-      <button class="u" id="pprev">Previous</button>
-      <button class="u" id="pnext">Next</button>
-    </div>
+    <button class="ib" id="pclose" aria-label="Close video"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div class="stage" id="stage"><div class="frame" id="frame"></div></div>
+  <div class="pnav">
+    <button class="ib" id="pprev" aria-label="Previous video"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="pcount"></span>
+    <button class="ib" id="pnext" aria-label="Next video"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
   </div>
 </div>
 
 <script>
 /* ============ EDIT THIS PART ============
-   Each line is one video from an X (Twitter) post.
-   x     = link to the X post that has the video
-           example: x:"https://x.com/izesaki/status/1234567890"
+   Each line is one video from an X post.
+   x     = link to the X post with the video
    title = name shown on the tile
-   cat   = category (any name, becomes a filter automatically)
-   (duration is read from the video automatically)
+   cat   = category (becomes a filter automatically)
+   The first video is shown larger, so put your best work first.
+   Duration is read from the video automatically.
    A line with x:"" shows as "Coming soon".
-   Every line must end with a comma.
 ======================================== */
 const VIDEOS = [
-  { x:"https://x.com/izesaki/status/2115509092802502699", title:"ANOTHER LIFE", cat:"Short Movies" },
-  { x:"https://x.com/izesaki/status/2115004058096554144", title:"THE LAST LETTER", cat:"Short Movies" },
-  { x:"https://x.com/izesaki/status/2114293588033232980", title:"GOD IN THE STATIC", cat:"Music Video" },
-  { x:"https://x.com/izesaki/status/2113912084673245439", title:"THE HOUSE NEVER EMPTIED", cat:"Short Movies" },
-  { x:"https://x.com/izesaki/status/2113446943800340755", title:"THE FACE THAT REMAINS", cat:"Short Movies" },
-  { x:"https://x.com/izesaki/status/2112272459194118215", title:"AIZE Liptint UGC", cat:"AD" },
-  { x:"https://x.com/izesaki/status/2111076371724488750", title:"AIZENTO TIME MACHINE", cat:"AD" },
-  { x:"https://x.com/izesaki/status/2100299004689215532", title:"Handphone Ad", cat:"AD" },
-  { x:"https://x.com/izesaki/status/2099817993312354664", title:"BLUE WIND PARFUM", cat:"AD" },
-  { x:"https://x.com/izesaki/status/2099904225027543415", title:"C1 - SEE IT DIFFERENTLY", cat:"AD" },
-  { x:"https://x.com/izesaki/status/2109753291492270490", title:"ALL EYES TO KALIMANTAN", cat:"Short Movies" },
-  { x:"https://x.com/izesaki/status/2098903195804406080", title:"Choose Peace AMV", cat:"Music Video" },
-  { x:"https://x.com/izesaki/status/2101740798647935385", title:"THE LAST PIECE", cat:"Short Movies" },
-  { x:"https://x.com/izesaki/status/2106090261277515884", title:"Hazl UGC", cat:"AD" },
-  { x:"https://x.com/izesaki/status/2110455906077188266", title:"Best UGC on Openart", cat:"Achievement" },
-  { x:"https://x.com/izesaki/status/2102663694824186267", title:"AIZE Remnant UGC", cat:"AD" },
-  { x:"https://x.com/izesaki/status/2111163548004975077", title:"FLOWER FEVER", cat:"Music Video" },
+  { x:"https://x.com/izesaki/status/2115509092802502699", title:"Another Life", cat:"Short films" },
+  { x:"https://x.com/izesaki/status/2115004058096554144", title:"The Last Letter", cat:"Short films" },
+  { x:"https://x.com/izesaki/status/2114293588033232980", title:"God in the Static", cat:"Music videos" },
+  { x:"https://x.com/izesaki/status/2113912084673245439", title:"The House Never Emptied", cat:"Short films" },
+  { x:"https://x.com/izesaki/status/2113446943800340755", title:"The Face That Remains", cat:"Short films" },
+  { x:"https://x.com/izesaki/status/2112272459194118215", title:"AIZE Liptint", cat:"Ads" },
+  { x:"https://x.com/izesaki/status/2111163548004975077", title:"Flower Fever", cat:"Music videos" },
+  { x:"https://x.com/izesaki/status/2111076371724488750", title:"Aizento Time Machine", cat:"Ads" },
+  { x:"https://x.com/izesaki/status/2109753291492270490", title:"All Eyes to Kalimantan", cat:"Short films" },
+  { x:"https://x.com/izesaki/status/2106090261277515884", title:"Hazl", cat:"Ads" },
+  { x:"https://x.com/izesaki/status/2102663694824186267", title:"AIZE Remnant", cat:"Ads" },
+  { x:"https://x.com/izesaki/status/2101740798647935385", title:"The Last Piece", cat:"Short films" },
+  { x:"https://x.com/izesaki/status/2100299004689215532", title:"Handphone", cat:"Ads" },
+  { x:"https://x.com/izesaki/status/2099904225027543415", title:"C1: See It Differently", cat:"Ads" },
+  { x:"https://x.com/izesaki/status/2099817993312354664", title:"Blue Wind Parfum", cat:"Ads" },
+  { x:"https://x.com/izesaki/status/2098903195804406080", title:"Choose Peace (AMV)", cat:"Music videos" },
 ];
 /* ========================================= */
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-/* X (Twitter) support: read the post link, then fetch thumbnail + video file */
 const X_RE = /(?:x|twitter)\.com\/([^\/?#]+)\/status\/(\d+)/i;
 VIDEOS.forEach(v => {
   const m = String(v.x || "").match(X_RE);
   if (m) { v.user = m[1]; v.tid = m[2]; }
 });
 const soon = v => !v.tid;
+const single = c => c.replace(/s$/, "");
 const xCache = {};
 const fmtDur = s => { s = Math.round(s); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
 function getX(v){
@@ -235,11 +232,9 @@ function getX(v){
   return xCache[v.tid];
 }
 
-/* page load: let the wordmark widen once the font is ready */
 Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))])
   .then(() => document.documentElement.classList.add("ready"));
 
-/* filters + grid */
 const cats = ["All", ...new Set(VIDEOS.map(v => v.cat))];
 let active = "All";
 let queue = [];
@@ -247,30 +242,27 @@ let queue = [];
 function renderFilters(){
   $("#filters").innerHTML = cats.map(c => {
     const n = c === "All" ? VIDEOS.length : VIDEOS.filter(v => v.cat === c).length;
-    return `<button class="f" aria-pressed="${c===active}" data-c="${esc(c)}">${esc(c)}<sup>${n}</sup></button>`;
+    return `<button class="f" aria-pressed="${c===active}" data-c="${esc(c)}">${esc(c)}<span>${n}</span></button>`;
   }).join("");
 }
 
-function tileHTML(v, i){
+function tileHTML(v, i, lead){
   if (soon(v)) {
     return `<button class="tile" disabled aria-label="${esc(v.title)}, coming soon">
-      <span class="cap"><b>${esc(v.title)}</b><i>${esc(v.cat)}</i></span>
-      <span class="len">Coming soon</span>
+      <span class="thumb"><em>Coming soon</em></span>
+      <span class="meta"><b>${esc(v.title)}</b><i>${esc(single(v.cat))}</i></span>
     </button>`;
   }
-  return `<button class="tile" data-i="${i}" aria-label="Play ${esc(v.title)}">
-    <img alt="" hidden referrerpolicy="no-referrer">
-    <span class="scrim"></span>
-    <span class="cap"><b>${esc(v.title)}</b><i>${esc(v.cat)}</i></span>
-    <span class="len">${esc(v.dur || "")}</span>
-    <span class="play" aria-hidden="true"></span>
+  return `<button class="tile${lead ? " lead" : ""}" data-i="${i}" aria-label="Play ${esc(v.title)}">
+    <span class="thumb"><img alt="" hidden referrerpolicy="no-referrer"></span>
+    <span class="meta"><b>${esc(v.title)}</b><i>${esc(single(v.cat))}${v.dur ? ", " + v.dur : ""}</i></span>
   </button>`;
 }
 
 function renderGrid(){
   const list = VIDEOS.map((v, i) => i).filter(i => active === "All" || VIDEOS[i].cat === active);
   queue = list.filter(i => !soon(VIDEOS[i]));
-  $("#grid").innerHTML = list.map(i => tileHTML(VIDEOS[i], i)).join("");
+  $("#grid").innerHTML = list.map((i, n) => tileHTML(VIDEOS[i], i, n === 0)).join("");
   list.forEach(i => {
     const v = VIDEOS[i];
     if (soon(v)) return;
@@ -278,7 +270,8 @@ function renderGrid(){
       const tile = $(`.tile[data-i="${i}"]`);
       if (!tile || !info) return;
       if (info.thumb) { const img = tile.querySelector("img"); img.src = info.thumb; img.hidden = false; }
-      if (!v.dur && info.dur) { v.dur = fmtDur(info.dur); tile.querySelector(".len").textContent = v.dur; }
+      if (!v.dur && info.dur) v.dur = fmtDur(info.dur);
+      if (v.dur) tile.querySelector(".meta i").textContent = single(v.cat) + ", " + v.dur;
     });
   });
 }
@@ -297,7 +290,7 @@ $("#grid").addEventListener("click", e => {
 renderFilters();
 renderGrid();
 
-/* screening room */
+/* player */
 const player = $("#player");
 let cur = -1, lastFocus = null;
 
@@ -308,31 +301,34 @@ function openAt(i){
   const fr = $("#frame");
   fr.className = "frame";
   fr.style.removeProperty("--r");
-  fr.innerHTML = `<div class="wait">Loading</div>`;
+  fr.innerHTML = `<div class="wait">Loading video</div>`;
   getX(v).then(info => {
     if (cur !== i || !player.classList.contains("open")) return;
     if (info) {
       if (info.w && info.h) fr.style.setProperty("--r", (info.w / info.h).toFixed(4));
       fr.innerHTML = `<video src="${esc(info.url)}" poster="${esc(info.thumb)}" controls autoplay playsinline preload="auto"></video>`;
-      if (!v.dur && info.dur) { v.dur = fmtDur(info.dur); $("#pmeta").textContent = v.cat + ", " + v.dur; }
+      if (!v.dur && info.dur) { v.dur = fmtDur(info.dur); $("#pmeta").textContent = single(v.cat) + ", " + v.dur; }
     } else {
       fr.className = "frame embed";
       fr.innerHTML = `<iframe src="https://platform.twitter.com/embed/Tweet.html?id=${v.tid}&theme=dark&dnt=true" allow="autoplay; fullscreen" allowfullscreen title="${esc(v.title)}"></iframe>`;
     }
   });
   $("#ptitle").textContent = v.title;
-  $("#pmeta").textContent = v.cat + (v.dur ? ", " + v.dur : "");
+  $("#pmeta").textContent = single(v.cat) + (v.dur ? ", " + v.dur : "");
   const pos = queue.indexOf(i);
-  $("#pcount").textContent = pos > -1 ? `${pos + 1} of ${queue.length}` : "";
+  $("#pcount").textContent = pos > -1 ? `${pos + 1} / ${queue.length}` : "";
   const multi = queue.length > 1;
   $("#pprev").hidden = !multi;
   $("#pnext").hidden = !multi;
+  $("#pcount").hidden = !multi;
   player.classList.add("open");
+  player.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
   $("#pclose").focus();
 }
 function closePlayer(){
   player.classList.remove("open");
+  player.setAttribute("aria-hidden", "true");
   $("#frame").innerHTML = "";
   document.body.style.overflow = "";
   if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
@@ -343,6 +339,7 @@ function step(d){
   openAt(queue[(pos + d + queue.length) % queue.length]);
 }
 $("#pclose").onclick = closePlayer;
+$("#stage").addEventListener("click", e => { if (e.target.id === "stage") closePlayer(); });
 $("#pprev").onclick = () => step(-1);
 $("#pnext").onclick = () => step(1);
 document.addEventListener("keydown", e => {
