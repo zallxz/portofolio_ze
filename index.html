@@ -3,68 +3,102 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>izesaki · AI filmmaker</title>
+<title>izesaki, AI filmmaker</title>
 <meta name="description" content="Independent AI filmmaker making short films, music videos, and ads.">
 <meta name="theme-color" content="#000000">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
-<noscript><style>.wordmark{opacity:1!important}</style></noscript>
+<noscript><style>.title{opacity:1!important}</style></noscript>
 <style>
 :root{
-  --bg:#000;
-  --raise:#121212;
-  --line:#262626;
-  --text:#ececec;
-  --muted:#8e8e8e;
+  color-scheme:light;
+  --bg:#f3f3f1;
+  --raise:#e2e2de;
+  --line:#d4d4cf;
+  --text:#000;
+  --muted:#636361;
+  /* the cinema frame and the player stay black in both modes: they are the screen */
+  --cinema:#000;
+  --cinema-text:#f2f2f2;
+  --cinema-muted:#9d9d9d;
+  --scrim:rgba(0,0,0,.3);
   --pad:clamp(16px,3vw,40px);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    color-scheme:dark;
+    --bg:#000;
+    --raise:#151515;
+    --line:#272727;
+    --text:#ececec;
+    --muted:#8c8c8c;
+  }
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;background:var(--bg)}
 body{background:var(--bg);color:var(--text);font-family:'Archivo',system-ui,sans-serif;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
 a{color:inherit}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:left}
-:focus-visible{outline:2px solid var(--text);outline-offset:3px}
+:focus-visible{outline:2px solid currentColor;outline-offset:3px}
 ::selection{background:var(--text);color:var(--bg)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
-/* masthead */
-.masthead{padding:clamp(20px,4vw,44px) var(--pad) clamp(40px,6vw,72px)}
-.wordmark{
-  font-weight:800;
-  font-stretch:125%;
-  font-size:min(18.5vw,270px);
-  line-height:.9;
-  letter-spacing:-.05em;
-  white-space:nowrap;
-  overflow:hidden;
+/* ---------- hero: a letterboxed frame, the lead film plays in the picture area ---------- */
+.hero{background:var(--cinema);color:var(--cinema-text)}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:0 var(--pad);min-height:clamp(52px,8vh,84px);font-size:.9rem}
+.bar .note{color:var(--cinema-muted)}
+.socials{display:flex;gap:22px;font-weight:600}
+.socials a{text-decoration:none}
+.socials a:hover{text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1.5px}
+
+.screen{position:relative;height:calc(100vw / 2.39);max-height:calc(100vh - 230px);min-height:300px;overflow:hidden;background:var(--cinema)}
+@supports (height:100svh){.screen{max-height:calc(100svh - 230px)}}
+.screen img,.screen video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.screen img{opacity:0;transition:opacity .6s}
+.screen img.on{opacity:1}
+.screen video{opacity:0;transition:opacity 1s}
+.screen video.on{opacity:1}
+.screen::after{content:"";position:absolute;inset:0;background:var(--scrim);pointer-events:none}
+
+.title{
+  position:absolute;inset:0;z-index:1;display:grid;place-items:center;pointer-events:none;
+  font-weight:800;font-stretch:125%;
+  font-size:min(18vw,260px);line-height:.9;letter-spacing:-.05em;white-space:nowrap;
   opacity:0;
 }
-.ready .wordmark{opacity:1;animation:widen 1.7s cubic-bezier(.2,.8,.2,1) both}
+.ready .title{opacity:1;animation:widen 1.7s cubic-bezier(.2,.8,.2,1) both}
 @keyframes widen{
   from{font-stretch:62%;letter-spacing:-.015em}
   to{font-stretch:125%;letter-spacing:-.05em}
 }
-.intro{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px 48px;align-items:end;margin-top:clamp(20px,3vw,36px)}
-.bio{font-size:clamp(1.15rem,2.1vw,1.5rem);font-weight:450;line-height:1.35;max-width:36ch}
-.bio + .bio{margin-top:.8em;font-size:1rem;color:var(--muted);max-width:52ch}
-.bio a{text-underline-offset:4px;text-decoration-thickness:1px}
-.bio a:hover{color:var(--text)}
-.links{display:flex;flex-direction:column;gap:4px;text-align:right;font-weight:600}
-.links a{text-decoration:none}
-.links a:hover{text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1.5px}
+.play{position:absolute;inset:0;z-index:2;display:flex;align-items:flex-end;padding:var(--pad)}
+.play:focus-visible{outline-offset:-6px}
+.play .label{display:inline-flex;align-items:center;gap:12px;font-weight:600}
+.play .label small{font-size:.85rem;font-weight:400;color:var(--cinema-muted)}
+.play svg{width:38px;height:38px;flex:none;fill:none;stroke:currentColor;stroke-width:1.5}
+.play svg path{fill:currentColor;stroke:none}
+.play:hover .label span:first-of-type{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px}
+
+/* the bio sits in the lower bar, set like burned-in subtitles */
+.subs{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:clamp(96px,14vh,140px);padding:16px var(--pad) 24px;text-align:center}
+.subs p{max-width:48ch;font-size:clamp(1rem,1.6vw,1.25rem);font-weight:500;font-stretch:96%;line-height:1.35;text-shadow:0 1px 2px var(--cinema)}
+.subs a{text-underline-offset:4px;text-decoration-thickness:1px}
+
 @media (max-width:640px){
-  .intro{grid-template-columns:1fr}
-  .links{flex-direction:row;gap:20px;text-align:left}
+  .bar .note{display:none}
+  .bar{justify-content:flex-end}
+  .screen{height:auto;aspect-ratio:1;max-height:none;min-height:0}
+  .title{font-size:21vw}
 }
 
-/* filters */
+/* ---------- work ---------- */
 .filters{
   position:sticky;top:0;z-index:30;
   display:flex;gap:28px;
   padding:14px var(--pad);
   overflow-x:auto;scrollbar-width:none;
-  background:rgba(0,0,0,.88);border-bottom:1px solid var(--line);
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  background:var(--bg);border-bottom:1px solid var(--line);
 }
 .filters::-webkit-scrollbar{display:none}
 .f{flex:none;font-weight:500;color:var(--muted);padding:2px 0}
@@ -72,39 +106,36 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .f[aria-pressed="true"]{color:var(--text);text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:7px}
 .f span{margin-left:6px;font-size:.8em;font-variant-numeric:tabular-nums;color:var(--muted)}
 
-/* work */
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(min(100%,360px),1fr));
-  gap:36px 16px;
-  padding:28px var(--pad) 0;
+  grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));
+  gap:44px 20px;
+  padding:32px var(--pad) 0;
 }
-@media (min-width:900px){ .tile.lead{grid-column:span 2} .tile.lead b{font-size:1.35rem} }
-.tile{display:flex;flex-direction:column;gap:10px;width:100%}
+.tile{display:flex;flex-direction:column;gap:12px;width:100%}
 .thumb{position:relative;display:block;aspect-ratio:16/9;overflow:hidden;background:var(--raise)}
-.thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;transition:opacity .25s}
+.thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
 .thumb em{position:absolute;inset:0;display:grid;place-items:center;font-style:normal;font-size:.9rem;color:var(--muted)}
-.meta{display:flex;justify-content:space-between;align-items:baseline;gap:16px}
+.meta{display:grid;grid-template-columns:1fr auto;gap:2px 16px;align-items:baseline}
 .meta b{font-weight:600;font-size:1.05rem;line-height:1.25}
-.meta i{flex:none;font-style:normal;font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.meta .dur{font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.meta .sub{grid-column:1/-1;font-size:.85rem;color:var(--muted)}
 .tile[disabled]{cursor:default}
 .tile[disabled] b{color:var(--muted)}
 .tile:focus-visible{outline:none}
 .tile:focus-visible .thumb{outline:2px solid var(--text);outline-offset:3px}
 @media (hover:hover){
-  .tile:not([disabled]):hover img{opacity:1}
+  .tile:not([disabled]):hover img{transform:scale(1.03)}
   .tile:not([disabled]):hover b{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:4px}
 }
-.tile:not([disabled]):focus-visible img{opacity:1}
 
-/* footer */
 .foot{display:flex;justify-content:space-between;gap:16px;margin-top:clamp(72px,10vw,120px);padding:20px var(--pad) 24px;border-top:1px solid var(--line);font-size:.9rem;color:var(--muted)}
 .foot a{text-underline-offset:4px}
 .foot a:hover{color:var(--text)}
 
-/* player: title bar, video and nav stay together as one block */
+/* ---------- player ---------- */
 .player{
-  position:fixed;inset:0;z-index:100;background:#000;
+  position:fixed;inset:0;z-index:100;background:var(--cinema);color:var(--cinema-text);
   display:flex;align-items:center;justify-content:center;
   padding:12px var(--pad);
   opacity:0;visibility:hidden;transition:opacity .25s,visibility 0s .25s;
@@ -113,53 +144,67 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .pbox{--r:1.7778;display:flex;flex-direction:column;width:min(100%,calc((100vh - 140px)*var(--r)))}
 @supports (height:100dvh){.pbox{width:min(100%,calc((100dvh - 140px)*var(--r)))}}
 .pbar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-bottom:8px}
-.pbar h3{font-size:1rem;font-weight:600;line-height:1.25}
-.pbar p{font-size:.85rem;color:var(--muted)}
-.frame{width:100%;aspect-ratio:var(--r);background:#000}
-.frame iframe,.frame video{display:block;width:100%;height:100%;border:0;background:#000}
-.frame video{object-fit:contain}
-.frame .wait{display:grid;place-items:center;height:100%;color:var(--muted);font-size:.9rem}
-.fail{position:relative;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;text-align:center;background:var(--raise) center/cover}
+.pbar h2{font-size:1rem;font-weight:600;line-height:1.25}
+.pbar p{font-size:.85rem;color:var(--cinema-muted)}
+.frame{width:100%;aspect-ratio:var(--r);background:var(--cinema)}
+.frame video{display:block;width:100%;height:100%;border:0;background:var(--cinema);object-fit:contain}
+.frame .wait{display:grid;place-items:center;height:100%;color:var(--cinema-muted);font-size:.9rem}
+.fail{position:relative;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;text-align:center;background:var(--cinema) center/cover}
 .fail::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,.75)}
 .fail p,.fail button{position:relative;max-width:32ch;font-size:.95rem}
-.retry{padding:9px 18px;border:1px solid var(--muted);border-radius:999px;font-weight:600}
-.retry:hover{border-color:var(--text)}
+.retry{padding:9px 18px;border:1px solid var(--cinema-muted);border-radius:999px;font-weight:600}
+.retry:hover{border-color:var(--cinema-text)}
 .pnav{display:flex;justify-content:center;align-items:center;gap:8px;padding-top:6px}
-.pnav span{min-width:4.5em;text-align:center;font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
-.ib{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;color:var(--muted);transition:color .2s,background-color .2s}
-.ib:hover{color:var(--text);background:#1c1c1c}
+.pnav span{min-width:4.5em;text-align:center;font-size:.85rem;color:var(--cinema-muted);font-variant-numeric:tabular-nums}
+.ib{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;color:var(--cinema-muted);transition:color .2s,background-color .2s}
+.ib:hover{color:var(--cinema-text);background:rgba(255,255,255,.1)}
 .ib svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
-.ib[hidden]{display:none}
+.ib[hidden],.pnav span[hidden]{display:none}
 #pclose{margin-right:-11px}
 .pact{display:flex;align-items:center;gap:12px;flex:none}
-.pext{font-size:.85rem;color:var(--muted);text-underline-offset:4px}
-.pext:hover{color:var(--text)}
+.pext{font-size:.85rem;color:var(--cinema-muted);text-underline-offset:4px}
+.pext:hover{color:var(--cinema-text)}
 
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  .ready .wordmark{animation:none}
+  .ready .title{animation:none}
   *{transition:none!important}
 }
 </style>
 </head>
 <body>
 
-<header class="masthead" id="top">
-  <h1 class="wordmark">izesaki</h1>
-  <div class="intro">
-    <div>
-      <p class="bio">Independent filmmaker working with AI. I make short films, music videos, and ads, telling stories that would normally need a full crew.</p>
-      <p class="bio">Winner of <a href="https://x.com/izesaki/status/2110455906077188266" target="_blank" rel="noopener">Best UGC on OpenArt</a>. Open to commissions and collaborations.</p>
-    </div>
-    <nav class="links" aria-label="Contact">
+<header class="hero" id="top">
+  <div class="bar">
+    <span class="note">Open to commissions and collaborations</span>
+    <nav class="socials" aria-label="Contact">
       <a href="https://x.com/izesaki" target="_blank" rel="noopener">X</a>
       <a href="https://www.instagram.com/izesaki" target="_blank" rel="noopener">Instagram</a>
       <a href="https://www.tiktok.com/@zeesai_" target="_blank" rel="noopener">TikTok</a>
     </nav>
   </div>
+
+  <div class="screen" id="screen">
+    <img id="hposter" alt="" referrerpolicy="no-referrer">
+    <video id="hvideo" muted loop playsinline preload="none" aria-hidden="true"></video>
+    <h1 class="title">izesaki</h1>
+    <button class="play" id="hplay" hidden>
+      <span class="label">
+        <svg viewBox="0 0 38 38" aria-hidden="true"><circle cx="19" cy="19" r="18"/><path d="M15.5 12.5l10 6.5-10 6.5z"/></svg>
+        <span id="htitle"></span>
+        <small id="hmeta"></small>
+      </span>
+    </button>
+  </div>
+
+  <div class="subs">
+    <p>Independent filmmaker working with AI. Short films, music videos, and ads that would normally need a full crew.</p>
+    <p>Winner of <a href="https://x.com/izesaki/status/2110455906077188266" target="_blank" rel="noopener">Best UGC on OpenArt</a>.</p>
+  </div>
 </header>
 
 <main>
+  <h2 class="sr">Work</h2>
   <nav class="filters" id="filters" aria-label="Filter work by category"></nav>
   <div class="grid" id="grid"></div>
 </main>
@@ -172,7 +217,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 <div class="player" id="player" role="dialog" aria-modal="true" aria-labelledby="ptitle" aria-hidden="true">
  <div class="pbox" id="pbox">
   <div class="pbar">
-    <div><h3 id="ptitle"></h3><p id="pmeta"></p></div>
+    <div><h2 id="ptitle"></h2><p id="pmeta"></p></div>
     <div class="pact">
       <a class="pext" id="pext" href="#" target="_blank" rel="noopener">Open on X</a>
       <button class="ib" id="pclose" aria-label="Close video"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
@@ -193,8 +238,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
    x     = link to the X post with the video
    title = name shown on the tile
    cat   = category (becomes a filter automatically)
-   The first video is shown larger, so put your best work first.
-   Duration is read from the video automatically.
+   The first video plays silently in the header, so put your best work first.
+   Duration and date are read from the post automatically.
    A line with x:"" shows as "Coming soon".
 ======================================== */
 const VIDEOS = [
@@ -220,23 +265,43 @@ const VIDEOS = [
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const X_RE = /(?:x|twitter)\.com\/([^\/?#]+)\/status\/(\d+)/i;
+/* an X post id carries its own timestamp, so the month comes for free */
+const postDate = id => {
+  try { return new Date(Number((BigInt(id) >> 22n) + 1288834974657n)).toLocaleDateString("en", { month: "short", year: "numeric" }); }
+  catch { return ""; }
+};
 VIDEOS.forEach(v => {
   const m = String(v.x || "").match(X_RE);
-  if (m) { v.user = m[1]; v.tid = m[2]; }
+  if (m) { v.user = m[1]; v.tid = m[2]; v.date = postDate(m[2]); }
 });
 const soon = v => !v.tid;
 const single = c => c.replace(/s$/, "");
+const subline = v => [single(v.cat), v.date].filter(Boolean).join(", ");
 const xCache = {}, xInfo = {};
 const fmtDur = s => { s = Math.round(s); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const saveData = !!(navigator.connection && navigator.connection.saveData);
+
+function mp4s(vid){
+  return (vid.variants || [])
+    .filter(x => x.url && /mp4/i.test(x.content_type || x.url) && x.bitrate)
+    .sort((a, b) => a.bitrate - b.bitrate);
+}
+function pickUnder(list, cap){
+  const fit = list.filter(x => x.bitrate <= cap);
+  return (fit.length ? fit[fit.length - 1] : list[0]).url;
+}
 /* phones get a lighter file so playback starts faster */
 function pickUrl(vid){
-  const mp4 = (vid.variants || []).filter(x => x.url && /mp4/i.test(x.content_type || x.url) && x.bitrate);
-  if (!mp4.length) return vid.url;
-  mp4.sort((a, b) => a.bitrate - b.bitrate);
+  const list = mp4s(vid);
+  if (!list.length) return vid.url;
   const small = Math.min(screen.width, screen.height) * (window.devicePixelRatio || 1) < 1100;
-  const cap = small ? 2500000 : Infinity;
-  const fit = mp4.filter(x => x.bitrate <= cap);
-  return (fit.length ? fit[fit.length - 1] : mp4[0]).url;
+  return pickUnder(list, small ? 2500000 : Infinity);
+}
+/* the silent header loop only needs a light file */
+function pickBg(vid){
+  const list = mp4s(vid);
+  return list.length ? pickUnder(list, 2300000) : vid.url;
 }
 function getX(v){
   if (!xCache[v.tid]) {
@@ -248,7 +313,7 @@ function getX(v){
         const t = j && (j.tweet || j.status);
         const vid = t && t.media && t.media.videos && t.media.videos[0];
         if (!vid || !vid.url) return null;
-        return { url: pickUrl(vid), thumb: vid.thumbnail_url || "", w: vid.width, h: vid.height, dur: vid.duration };
+        return { url: pickUrl(vid), bg: pickBg(vid), thumb: vid.thumbnail_url || "", w: vid.width, h: vid.height, dur: vid.duration };
       })
       .catch(() => null)
       .then(info => {
@@ -264,6 +329,40 @@ function getX(v){
 Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))])
   .then(() => document.documentElement.classList.add("ready"));
 
+/* ---------- header film ---------- */
+const lead = VIDEOS.findIndex(v => !soon(v));
+const hvideo = $("#hvideo");
+let heroVisible = true;
+function heroPlay(){
+  if (hvideo.src && heroVisible && !player.classList.contains("open")) hvideo.play().catch(() => {});
+}
+if (lead > -1) {
+  const v = VIDEOS[lead];
+  $("#htitle").textContent = v.title;
+  $("#hmeta").textContent = single(v.cat);
+  $("#hplay").setAttribute("aria-label", "Play " + v.title);
+  $("#hplay").hidden = false;
+  $("#hplay").onclick = () => openAt(lead);
+  getX(v).then(info => {
+    if (!info) return;
+    if (info.thumb) {
+      const img = $("#hposter");
+      img.onload = () => img.classList.add("on");
+      img.src = info.thumb;
+    }
+    if (info.dur) $("#hmeta").textContent = single(v.cat) + ", " + fmtDur(info.dur);
+    if (reduceMotion || saveData) return; /* the still frame is enough */
+    hvideo.addEventListener("playing", () => hvideo.classList.add("on"), { once: true });
+    hvideo.src = info.bg;
+    heroPlay();
+  });
+  new IntersectionObserver(([e]) => {
+    heroVisible = e.isIntersecting;
+    heroVisible ? heroPlay() : hvideo.pause();
+  }).observe($("#screen"));
+}
+
+/* ---------- work grid ---------- */
 const cats = ["All", ...new Set(VIDEOS.map(v => v.cat))];
 let active = "All";
 let queue = [];
@@ -275,23 +374,23 @@ function renderFilters(){
   }).join("");
 }
 
-function tileHTML(v, i, lead){
+function tileHTML(v, i){
   if (soon(v)) {
     return `<button class="tile" disabled aria-label="${esc(v.title)}, coming soon">
       <span class="thumb"><em>Coming soon</em></span>
-      <span class="meta"><b>${esc(v.title)}</b><i>${esc(single(v.cat))}</i></span>
+      <span class="meta"><b>${esc(v.title)}</b><span class="sub">${esc(single(v.cat))}</span></span>
     </button>`;
   }
-  return `<button class="tile${lead ? " lead" : ""}" data-i="${i}" aria-label="Play ${esc(v.title)}">
-    <span class="thumb"><img alt="" hidden referrerpolicy="no-referrer"></span>
-    <span class="meta"><b>${esc(v.title)}</b><i>${esc(single(v.cat))}${v.dur ? ", " + v.dur : ""}</i></span>
+  return `<button class="tile" data-i="${i}" aria-label="Play ${esc(v.title)}">
+    <span class="thumb"><img alt="" hidden loading="lazy" referrerpolicy="no-referrer"></span>
+    <span class="meta"><b>${esc(v.title)}</b><span class="dur">${v.dur || ""}</span><span class="sub">${esc(subline(v))}</span></span>
   </button>`;
 }
 
 function renderGrid(){
   const list = VIDEOS.map((v, i) => i).filter(i => active === "All" || VIDEOS[i].cat === active);
   queue = list.filter(i => !soon(VIDEOS[i]));
-  $("#grid").innerHTML = list.map((i, n) => tileHTML(VIDEOS[i], i, n === 0)).join("");
+  $("#grid").innerHTML = list.map(i => tileHTML(VIDEOS[i], i)).join("");
   list.forEach(i => {
     const v = VIDEOS[i];
     if (soon(v)) return;
@@ -300,7 +399,7 @@ function renderGrid(){
       if (!tile || !info) return;
       if (info.thumb) { const img = tile.querySelector("img"); img.src = info.thumb; img.hidden = false; }
       if (!v.dur && info.dur) v.dur = fmtDur(info.dur);
-      if (v.dur) tile.querySelector(".meta i").textContent = single(v.cat) + ", " + v.dur;
+      if (v.dur) tile.querySelector(".dur").textContent = v.dur;
     });
   });
 }
@@ -319,8 +418,9 @@ $("#grid").addEventListener("click", e => {
 renderFilters();
 renderGrid();
 
-/* player */
+/* ---------- player ---------- */
 const player = $("#player");
+const page = [$("header.hero"), $("main"), $("footer")];
 let cur = -1, lastFocus = null;
 
 function fail(v){
@@ -353,14 +453,15 @@ function mount(v, info){
   vid.src = info.url;
   fr.replaceChildren(vid);
   vid.play().catch(() => {}); /* if the browser blocks autoplay, the play button is still there */
-  if (!v.dur && info.dur) { v.dur = fmtDur(info.dur); $("#pmeta").textContent = single(v.cat) + ", " + v.dur; }
+  if (!v.dur && info.dur) v.dur = fmtDur(info.dur);
+  $("#pmeta").textContent = subline(v) + (v.dur ? ", " + v.dur : "");
 }
 function openAt(i){
   const v = VIDEOS[i];
   if (!player.classList.contains("open")) lastFocus = document.activeElement;
   cur = i;
   $("#ptitle").textContent = v.title;
-  $("#pmeta").textContent = single(v.cat) + (v.dur ? ", " + v.dur : "");
+  $("#pmeta").textContent = subline(v) + (v.dur ? ", " + v.dur : "");
   $("#pext").href = v.x;
   const pos = queue.indexOf(i);
   $("#pcount").textContent = pos > -1 ? `${pos + 1} / ${queue.length}` : "";
@@ -370,7 +471,9 @@ function openAt(i){
   $("#pcount").hidden = !multi;
   player.classList.add("open");
   player.setAttribute("aria-hidden", "false");
+  page.forEach(el => el.inert = true);
   document.body.style.overflow = "hidden";
+  hvideo.pause();
   $("#pclose").focus();
 
   const fr = $("#frame");
@@ -387,9 +490,11 @@ function openAt(i){
 function closePlayer(){
   player.classList.remove("open");
   player.setAttribute("aria-hidden", "true");
+  page.forEach(el => el.inert = false);
   $("#frame").innerHTML = "";
   document.body.style.overflow = "";
   if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
+  heroPlay();
 }
 function step(d){
   if (queue.length < 2) return;
@@ -403,6 +508,7 @@ $("#pnext").onclick = () => step(1);
 document.addEventListener("keydown", e => {
   if (!player.classList.contains("open")) return;
   if (e.key === "Escape") closePlayer();
+  if (e.target.tagName === "VIDEO") return; /* let the video keep its own arrow-key seeking */
   if (e.key === "ArrowLeft") step(-1);
   if (e.key === "ArrowRight") step(1);
 });
