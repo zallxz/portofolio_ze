@@ -3,42 +3,49 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- FIX: X's video CDN refuses media requests that carry this site's Referer. Without this line no video plays. -->
+<meta name="referrer" content="no-referrer">
 <title>izesaki, AI filmmaker</title>
 <meta name="description" content="Independent AI filmmaker making short films, music videos, and ads.">
 <meta name="theme-color" content="#000000">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://api.fxtwitter.com" crossorigin>
+<link rel="preconnect" href="https://video.twimg.com">
+<link rel="preconnect" href="https://pbs.twimg.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
 <noscript><style>.title{opacity:1!important}</style></noscript>
 <style>
 :root{
   color-scheme:light;
   --bg:#f3f3f1;
-  --raise:#e2e2de;
-  --line:#d4d4cf;
-  --text:#000;
-  --muted:#636361;
+  --raise:#e4e4e0;
+  --line:#d6d6d1;
+  --text:#0a0a0a;
+  --muted:#66665f;
   /* the cinema frame and the player stay black in both modes: they are the screen */
   --cinema:#000;
   --cinema-text:#f2f2f2;
   --cinema-muted:#9d9d9d;
-  --scrim:rgba(0,0,0,.3);
   --pad:clamp(16px,3vw,40px);
+  --ease:cubic-bezier(.2,.8,.2,1);
 }
 @media (prefers-color-scheme:dark){
   :root{
     color-scheme:dark;
     --bg:#000;
-    --raise:#151515;
-    --line:#272727;
+    --raise:#141414;
+    --line:#262626;
     --text:#ececec;
-    --muted:#8c8c8c;
+    --muted:#8a8a8a;
   }
 }
 *{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
 html{scroll-behavior:smooth;background:var(--bg)}
 body{background:var(--bg);color:var(--text);font-family:'Archivo',system-ui,sans-serif;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
 a{color:inherit}
+img{display:block}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:left}
 :focus-visible{outline:2px solid currentColor;outline-offset:3px}
 ::selection{background:var(--text);color:var(--bg)}
@@ -47,7 +54,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 /* ---------- hero: a letterboxed frame, the lead film plays in the picture area ---------- */
 .hero{background:var(--cinema);color:var(--cinema-text)}
 .bar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:0 var(--pad);min-height:clamp(52px,8vh,84px);font-size:.9rem}
-.bar .note{color:var(--cinema-muted)}
+.bar .note{display:inline-flex;align-items:center;gap:10px;color:var(--cinema-muted)}
+.bar .note i{width:7px;height:7px;border-radius:50%;background:#3ddc84;box-shadow:0 0 0 3px rgba(61,220,132,.18)}
 .socials{display:flex;gap:22px;font-weight:600}
 .socials a{text-decoration:none}
 .socials a:hover{text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1.5px}
@@ -56,10 +64,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 @supports (height:100svh){.screen{max-height:calc(100svh - 230px)}}
 .screen img,.screen video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .screen img{opacity:0;transition:opacity .6s}
-.screen img.on{opacity:1}
-.screen video{opacity:0;transition:opacity 1s}
-.screen video.on{opacity:1}
-.screen::after{content:"";position:absolute;inset:0;background:var(--scrim);pointer-events:none}
+.screen video{opacity:0;transition:opacity 1.2s}
+.screen img.on,.screen video.on{opacity:1}
+.screen::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to top,rgba(0,0,0,.6),rgba(0,0,0,.15) 45%,rgba(0,0,0,.25))}
 
 .title{
   position:absolute;inset:0;z-index:1;display:grid;place-items:center;pointer-events:none;
@@ -67,23 +75,26 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
   font-size:min(18vw,260px);line-height:.9;letter-spacing:-.05em;white-space:nowrap;
   opacity:0;
 }
-.ready .title{opacity:1;animation:widen 1.7s cubic-bezier(.2,.8,.2,1) both}
+.ready .title{opacity:1;animation:widen 1.7s var(--ease) both}
 @keyframes widen{
   from{font-stretch:62%;letter-spacing:-.015em}
   to{font-stretch:125%;letter-spacing:-.05em}
 }
 .play{position:absolute;inset:0;z-index:2;display:flex;align-items:flex-end;padding:var(--pad)}
 .play:focus-visible{outline-offset:-6px}
-.play .label{display:inline-flex;align-items:center;gap:12px;font-weight:600}
-.play .label small{font-size:.85rem;font-weight:400;color:var(--cinema-muted)}
-.play svg{width:38px;height:38px;flex:none;fill:none;stroke:currentColor;stroke-width:1.5}
+.play .pl{display:inline-flex;align-items:center;gap:14px}
+.play .pl span{display:flex;flex-direction:column;line-height:1.25}
+.play .pl em{font-style:normal;font-size:.85rem;color:var(--cinema-muted)}
+.play .pl b{font-weight:600}
+.play .pl small{font-size:.85rem;color:var(--cinema-muted)}
+.play svg{width:44px;height:44px;flex:none;fill:none;stroke:currentColor;stroke-width:1.5;transition:transform .3s var(--ease)}
 .play svg path{fill:currentColor;stroke:none}
-.play:hover .label span:first-of-type{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px}
+.play:hover svg{transform:scale(1.08)}
+.play:hover .pl b{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px}
 
 /* the bio sits in the lower bar, set like burned-in subtitles */
-.subs{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:clamp(96px,14vh,140px);padding:16px var(--pad) 24px;text-align:center}
-.subs p{max-width:48ch;font-size:clamp(1rem,1.6vw,1.25rem);font-weight:500;font-stretch:96%;line-height:1.35;text-shadow:0 1px 2px var(--cinema)}
-.subs a{text-underline-offset:4px;text-decoration-thickness:1px}
+.subs{display:flex;align-items:center;justify-content:center;min-height:clamp(96px,14vh,140px);padding:16px var(--pad) 24px;text-align:center}
+.subs p{max-width:48ch;font-size:clamp(1rem,1.6vw,1.25rem);font-weight:500;font-stretch:96%;line-height:1.35}
 
 @media (max-width:640px){
   .bar .note{display:none}
@@ -114,12 +125,19 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 }
 .tile{display:flex;flex-direction:column;gap:12px;width:100%}
 .thumb{position:relative;display:block;aspect-ratio:16/9;overflow:hidden;background:var(--raise)}
-.thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.thumb.wait::before{content:"";position:absolute;inset:0;
+  background:linear-gradient(100deg,transparent 30%,rgba(127,127,127,.12) 50%,transparent 70%) 0 0/250% 100%;
+  animation:shine 1.4s linear infinite}
+@keyframes shine{from{background-position:150% 0}to{background-position:-100% 0}}
+.thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .4s,transform .6s var(--ease)}
+.thumb img.on{opacity:1}
 .thumb em{position:absolute;inset:0;display:grid;place-items:center;font-style:normal;font-size:.9rem;color:var(--muted)}
-.meta{display:grid;grid-template-columns:1fr auto;gap:2px 16px;align-items:baseline}
+.thumb .dur{position:absolute;right:8px;bottom:8px;padding:2px 7px;border-radius:3px;background:rgba(0,0,0,.72);color:#fff;font-size:.75rem;font-weight:500;font-variant-numeric:tabular-nums;line-height:1.5}
+.thumb .dur:empty{display:none}
+.meta{display:flex;flex-direction:column;gap:2px}
 .meta b{font-weight:600;font-size:1.05rem;line-height:1.25}
-.meta .dur{font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
-.meta .sub{grid-column:1/-1;font-size:.85rem;color:var(--muted)}
+.meta .sub{font-size:.85rem;color:var(--muted)}
+.meta .aw{font-size:.85rem;font-weight:500}
 .tile[disabled]{cursor:default}
 .tile[disabled] b{color:var(--muted)}
 .tile:focus-visible{outline:none}
@@ -129,9 +147,32 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
   .tile:not([disabled]):hover b{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:4px}
 }
 
-.foot{display:flex;justify-content:space-between;gap:16px;margin-top:clamp(72px,10vw,120px);padding:20px var(--pad) 24px;border-top:1px solid var(--line);font-size:.9rem;color:var(--muted)}
+/* ---------- end credits: the page closes the way it opened, on black ---------- */
+.credits{margin-top:clamp(96px,12vw,160px);background:var(--cinema);color:var(--cinema-text);text-align:center}
+.cta{padding:clamp(80px,11vw,140px) var(--pad) 0}
+.cta h2{max-width:15ch;margin:0 auto;font-size:clamp(2.2rem,6.4vw,5rem);font-weight:800;font-stretch:118%;line-height:.96;letter-spacing:-.04em}
+.cta p{max-width:44ch;margin:20px auto 0;color:var(--cinema-muted)}
+.links{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:32px}
+.links a{display:inline-flex;align-items:center;padding:11px 22px;border:1px solid #444;border-radius:999px;font-weight:600;text-decoration:none;transition:border-color .2s,background-color .2s}
+.links a:hover{border-color:var(--cinema-text)}
+.links a.main{background:var(--cinema-text);border-color:var(--cinema-text);color:var(--cinema)}
+.links a.main:hover{background:#fff}
+
+.partners{margin-top:clamp(88px,11vw,140px);padding:0 var(--pad)}
+.partners h2{font-size:.95rem;font-weight:500;color:var(--cinema-muted)}
+.partners ul{display:flex;flex-wrap:wrap;justify-content:center;gap:18px 44px;margin-top:22px;list-style:none}
+.pt{display:inline-flex;align-items:center;gap:12px;text-decoration:none;text-align:left}
+.pt .av{position:relative;width:34px;height:34px;flex:none;border-radius:50%;overflow:hidden;background:#1d1d1d;display:grid;place-items:center;font-size:.85rem;font-weight:700;color:var(--cinema-muted)}
+.pt .av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pt .av::after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}
+.pt span{display:flex;flex-direction:column;line-height:1.2}
+.pt b{font-weight:700;font-stretch:110%;font-size:1.05rem}
+.pt small{font-size:.8rem;color:var(--cinema-muted)}
+.pt:hover b{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px}
+
+.foot{display:flex;justify-content:space-between;gap:16px;margin-top:clamp(88px,11vw,140px);padding:22px var(--pad) 26px;border-top:1px solid #262626;font-size:.9rem;color:var(--cinema-muted);text-align:left}
 .foot a{text-underline-offset:4px}
-.foot a:hover{color:var(--text)}
+.foot a:hover{color:var(--cinema-text)}
 
 /* ---------- player ---------- */
 .player{
@@ -141,8 +182,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
   opacity:0;visibility:hidden;transition:opacity .25s,visibility 0s .25s;
 }
 .player.open{opacity:1;visibility:visible;transition:opacity .25s}
-.pbox{--r:1.7778;display:flex;flex-direction:column;width:min(100%,calc((100vh - 140px)*var(--r)))}
-@supports (height:100dvh){.pbox{width:min(100%,calc((100dvh - 140px)*var(--r)))}}
+.pbox{--r:1.7778;display:flex;flex-direction:column;width:min(100%,calc((100vh - 150px)*var(--r)))}
+@supports (height:100dvh){.pbox{width:min(100%,calc((100dvh - 150px)*var(--r)))}}
 .pbar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-bottom:8px}
 .pbar h2{font-size:1rem;font-weight:600;line-height:1.25}
 .pbar p{font-size:.85rem;color:var(--cinema-muted)}
@@ -150,26 +191,26 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .frame video{display:block;width:100%;height:100%;border:0;background:var(--cinema);object-fit:contain}
 .frame .wait{display:grid;place-items:center;height:100%;color:var(--cinema-muted);font-size:.9rem}
 .fail{position:relative;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;text-align:center;background:var(--cinema) center/cover}
-.fail::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,.75)}
-.fail p,.fail button{position:relative;max-width:32ch;font-size:.95rem}
-.retry{padding:9px 18px;border:1px solid var(--cinema-muted);border-radius:999px;font-weight:600}
+.fail::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,.78)}
+.fail p,.fail div{position:relative;max-width:34ch;font-size:.95rem}
+.fail div{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.retry{display:inline-block;padding:9px 18px;border:1px solid var(--cinema-muted);border-radius:999px;font-weight:600;font-size:.9rem;text-decoration:none}
 .retry:hover{border-color:var(--cinema-text)}
 .pnav{display:flex;justify-content:center;align-items:center;gap:8px;padding-top:6px}
 .pnav span{min-width:4.5em;text-align:center;font-size:.85rem;color:var(--cinema-muted);font-variant-numeric:tabular-nums}
 .ib{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;color:var(--cinema-muted);transition:color .2s,background-color .2s}
 .ib:hover{color:var(--cinema-text);background:rgba(255,255,255,.1)}
 .ib svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
-.ib[hidden],.pnav span[hidden]{display:none}
 #pclose{margin-right:-11px}
 .pact{display:flex;align-items:center;gap:12px;flex:none}
 .pext{font-size:.85rem;color:var(--cinema-muted);text-underline-offset:4px}
 .pext:hover{color:var(--cinema-text)}
 .paward{display:inline-block;margin-top:2px;font-size:.85rem;color:var(--cinema-text);text-underline-offset:4px;text-decoration-thickness:1px}
-.paward[hidden]{display:none}
 
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   .ready .title{animation:none}
+  .thumb.wait::before{animation:none}
   *{transition:none!important}
 }
 </style>
@@ -178,8 +219,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 
 <header class="hero" id="top">
   <div class="bar">
-    <span class="note">Open to commissions and collaborations</span>
-    <nav class="socials" aria-label="Contact">
+    <span class="note"><i aria-hidden="true"></i>Open to commissions and collaborations</span>
+    <nav class="socials" aria-label="Social">
       <a href="https://x.com/izesaki" target="_blank" rel="noopener">X</a>
       <a href="https://www.instagram.com/izesaki" target="_blank" rel="noopener">Instagram</a>
       <a href="https://www.tiktok.com/@zeesai_" target="_blank" rel="noopener">TikTok</a>
@@ -187,14 +228,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
   </div>
 
   <div class="screen" id="screen">
-    <img id="hposter" alt="" referrerpolicy="no-referrer">
+    <img id="hposter" alt="">
     <video id="hvideo" muted loop playsinline preload="none" aria-hidden="true"></video>
     <h1 class="title">izesaki</h1>
     <button class="play" id="hplay" hidden>
-      <span class="label">
+      <span class="pl">
         <svg viewBox="0 0 38 38" aria-hidden="true"><circle cx="19" cy="19" r="18"/><path d="M15.5 12.5l10 6.5-10 6.5z"/></svg>
-        <span id="htitle"></span>
-        <small id="hmeta"></small>
+        <span><em>Latest film</em><b id="htitle"></b><small id="hmeta"></small></span>
       </span>
     </button>
   </div>
@@ -210,10 +250,27 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
   <div class="grid" id="grid"></div>
 </main>
 
-<footer class="foot">
-  <span>© 2026 izesaki</span>
-  <a href="#top">Back to top</a>
-</footer>
+<div class="credits">
+  <section class="cta" aria-labelledby="ctah">
+    <h2 id="ctah">Have a story that needs a crew?</h2>
+    <p>Short films, music videos and ads. Send the idea, and I'll reply with how I'd make it.</p>
+    <div class="links">
+      <a class="main" href="https://x.com/izesaki" target="_blank" rel="noopener">Message me on X</a>
+      <a href="https://www.instagram.com/izesaki" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.tiktok.com/@zeesai_" target="_blank" rel="noopener">TikTok</a>
+    </div>
+  </section>
+
+  <section class="partners" aria-labelledby="ptn">
+    <h2 id="ptn">partner</h2>
+    <ul id="partner"></ul>
+  </section>
+
+  <footer class="foot">
+    <span>© <span id="year">2026</span> izesaki</span>
+    <a href="#top">Back to top</a>
+  </footer>
+</div>
 
 <div class="player" id="player" role="dialog" aria-modal="true" aria-labelledby="ptitle" aria-hidden="true">
  <div class="pbox" id="pbox">
@@ -264,11 +321,20 @@ const VIDEOS = [
   { x:"https://x.com/izesaki/status/2099817993312354664", title:"Blue Wind Parfum", cat:"Ads" },
   { x:"https://x.com/izesaki/status/2098903195804406080", title:"Choose Peace (AMV)", cat:"Music videos" },
 ];
+
+/* Partners: handle = X username. The photo is refreshed from X automatically if it changes. */
+const PARTNERS = [
+  { handle:"openart_ai", name:"OpenArt", avatar:"https://pbs.twimg.com/profile_images/1917348318826389504/5vx77e9X_200x200.jpg" },
+  { handle:"AZ8official_JP", name:"AZ8 Japan", avatar:"https://pbs.twimg.com/profile_images/2054949135099527169/pxQ6otXn_200x200.jpg" },
+  { handle:"itsPolloAI", name:"Pollo AI", avatar:"https://pbs.twimg.com/profile_images/2108797484848066560/hUdK88SB_200x200.png" },
+];
 /* ========================================= */
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const X_RE = /(?:x|twitter)\.com\/([^\/?#]+)\/status\/(\d+)/i;
+$("#year").textContent = new Date().getFullYear();
+
 /* an X post id carries its own timestamp, so the month comes for free */
 const postDate = id => {
   try { return new Date(Number((BigInt(id) >> 22n) + 1288834974657n)).toLocaleDateString("en", { month: "short", year: "numeric" }); }
@@ -281,64 +347,140 @@ VIDEOS.forEach(v => {
 const soon = v => !v.tid;
 const single = c => c.replace(/s$/, "");
 const subline = v => [single(v.cat), v.date].filter(Boolean).join(", ");
-const xCache = {}, xInfo = {};
 const fmtDur = s => { s = Math.round(s); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const saveData = !!(navigator.connection && navigator.connection.saveData);
+const smallScreen = Math.min(screen.width, screen.height) * (window.devicePixelRatio || 1) < 1100;
 
+/* ---------- video lookup ---------- */
+/* Returns MP4 files only (browsers outside Safari can't play the HLS .m3u8 streams),
+   lowest bitrate first. Reads both field names the API has used. */
 function mp4s(vid){
-  return (vid.variants || [])
-    .filter(x => x.url && /mp4/i.test(x.content_type || x.url) && x.bitrate)
-    .sort((a, b) => a.bitrate - b.bitrate);
+  const seen = new Set();
+  return [...(vid.formats || []), ...(vid.variants || [])]
+    .filter(x => x && x.url && (/mp4/i.test(x.content_type || x.container || "") || /\.mp4(\?|$)/i.test(x.url)))
+    .filter(x => !seen.has(x.url) && seen.add(x.url))
+    .sort((a, b) => (a.bitrate || 0) - (b.bitrate || 0));
 }
-function pickUnder(list, cap){
-  const fit = list.filter(x => x.bitrate <= cap);
-  return (fit.length ? fit[fit.length - 1] : list[0]).url;
+/* best file at or under the cap first, then every other file as a fallback */
+function ordered(list, cap){
+  const fit = list.filter(x => (x.bitrate || 0) <= cap);
+  const first = fit.length ? fit[fit.length - 1] : list[0];
+  return [first, ...list.filter(x => x !== first).reverse()].map(x => x.url);
 }
-/* phones get a lighter file so playback starts faster */
-function pickUrl(vid){
-  const list = mp4s(vid);
-  if (!list.length) return vid.url;
-  const small = Math.min(screen.width, screen.height) * (window.devicePixelRatio || 1) < 1100;
-  return pickUnder(list, small ? 2500000 : Infinity);
+function fromFx(j){
+  const t = j && (j.tweet || j.status);
+  const vid = t && t.media && t.media.videos && t.media.videos[0];
+  if (!vid) return null;
+  let list = mp4s(vid);
+  if (!list.length && /\.mp4(\?|$)/i.test(vid.url || "")) list = [{ url: vid.url, bitrate: 0 }];
+  if (!list.length) return null;
+  return {
+    urls: ordered(list, smallScreen ? 2500000 : Infinity),
+    bg: ordered(list, 2300000),
+    thumb: vid.thumbnail_url || "", w: vid.width, h: vid.height, dur: vid.duration
+  };
 }
-/* the silent header loop only needs a light file */
-function pickBg(vid){
-  const list = mp4s(vid);
-  return list.length ? pickUnder(list, 2300000) : vid.url;
+function fromVx(j){
+  const m = j && (j.media_extended || []).find(x => x.type === "video" || x.type === "gif");
+  if (!m || !m.url) return null;
+  return {
+    urls: [m.url], bg: [m.url], thumb: m.thumbnail_url || "",
+    w: m.size && m.size.width, h: m.size && m.size.height,
+    dur: m.duration_millis ? m.duration_millis / 1000 : 0
+  };
 }
+function getJSON(url){
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 9000);
+  return fetch(url, { signal: ctrl.signal, referrerPolicy: "no-referrer" })
+    .then(r => r.ok ? r.json() : null)
+    .catch(() => null)
+    .finally(() => clearTimeout(timer));
+}
+
+/* a few requests at a time, so 16 tiles don't trip the API's rate limit */
+const slots = { busy: 0, wait: [] };
+function limited(job){
+  return new Promise(res => {
+    const run = () => { slots.busy++; job().then(res, () => res(null)).finally(() => { slots.busy--; const n = slots.wait.shift(); if (n) n(); }); };
+    slots.busy < 4 ? run() : slots.wait.push(run);
+  });
+}
+
+/* results are kept for the visit, so filters and the player never refetch */
+const CACHE_V = "xv2:", TTL = 6 * 3600e3;
+const store = {
+  get(id){ try { const o = JSON.parse(sessionStorage.getItem(CACHE_V + id)); return o && Date.now() - o.t < TTL ? o.d : null; } catch { return null; } },
+  set(id, d){ try { sessionStorage.setItem(CACHE_V + id, JSON.stringify({ t: Date.now(), d })); } catch {} },
+  drop(id){ try { sessionStorage.removeItem(CACHE_V + id); } catch {} }
+};
+const xCache = {}, xInfo = {};
 function getX(v){
+  if (v.tid in xInfo) return Promise.resolve(xInfo[v.tid]);
+  const saved = store.get(v.tid);
+  if (saved) { xInfo[v.tid] = saved; return Promise.resolve(saved); }
   if (!xCache[v.tid]) {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 8000);
-    xCache[v.tid] = fetch(`https://api.fxtwitter.com/${encodeURIComponent(v.user)}/status/${v.tid}`, { signal: ctrl.signal })
-      .then(r => r.ok ? r.json() : null)
-      .then(j => {
-        const t = j && (j.tweet || j.status);
-        const vid = t && t.media && t.media.videos && t.media.videos[0];
-        if (!vid || !vid.url) return null;
-        return { url: pickUrl(vid), bg: pickBg(vid), thumb: vid.thumbnail_url || "", w: vid.width, h: vid.height, dur: vid.duration };
-      })
-      .catch(() => null)
-      .then(info => {
-        if (info) xInfo[v.tid] = info;
-        else delete xCache[v.tid]; /* allow a fresh try next time */
-        return info;
-      })
-      .finally(() => clearTimeout(timer));
+    xCache[v.tid] = limited(async () => {
+      const u = encodeURIComponent(v.user);
+      return fromFx(await getJSON(`https://api.fxtwitter.com/${u}/status/${v.tid}`))
+          || fromVx(await getJSON(`https://api.vxtwitter.com/${u}/status/${v.tid}`));
+    }).then(info => {
+      if (info) { xInfo[v.tid] = info; store.set(v.tid, info); }
+      delete xCache[v.tid]; /* a failure can be tried again later */
+      return info;
+    });
   }
   return xCache[v.tid];
+}
+function forget(v){ delete xInfo[v.tid]; delete xCache[v.tid]; store.drop(v.tid); }
+
+/* plays a list of files in order, moving to the next one if a file fails */
+function attach(video, urls, onGiveUp){
+  let k = 0, t = 0;
+  video.addEventListener("error", () => {
+    if (!video.isConnected) return;
+    if (++k < urls.length) {
+      t = video.currentTime || 0;
+      video.src = urls[k];
+      if (t) video.addEventListener("loadedmetadata", () => { video.currentTime = t; }, { once: true });
+      video.play().catch(() => {});
+    } else onGiveUp();
+  });
+  video.src = urls[0];
 }
 
 Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))])
   .then(() => document.documentElement.classList.add("ready"));
 
+/* ---------- partners ---------- */
+$("#partners").innerHTML = PARTNERS.map((p, i) => `
+  <li><a class="pt" href="https://x.com/${esc(p.handle)}" target="_blank" rel="noopener">
+    <span class="av" aria-hidden="true">${esc(p.name.charAt(0))}<img alt="" data-p="${i}" loading="lazy"></span>
+    <span><b>${esc(p.name)}</b><small>@${esc(p.handle)}</small></span>
+  </a></li>`).join("");
+document.querySelectorAll("#partners img").forEach(img => {
+  const p = PARTNERS[+img.dataset.p];
+  let refreshed = false;
+  img.onerror = () => {
+    img.hidden = true;
+    if (refreshed) return;
+    refreshed = true; /* the saved photo changed on X: ask for the current one once */
+    getJSON("https://api.fxtwitter.com/" + encodeURIComponent(p.handle)).then(j => {
+      const a = j && j.user && j.user.avatar_url;
+      if (a) { img.hidden = false; img.src = a.replace("_normal", "_200x200"); }
+    });
+  };
+  img.src = p.avatar;
+});
+
 /* ---------- header film ---------- */
+const player = $("#player");
 const lead = VIDEOS.findIndex(v => !soon(v));
 const hvideo = $("#hvideo");
 let heroVisible = true;
 function heroPlay(){
-  if (hvideo.src && heroVisible && !player.classList.contains("open")) hvideo.play().catch(() => {});
+  if (hvideo.getAttribute("src") && heroVisible && !player.classList.contains("open")) hvideo.play().catch(() => {});
 }
 if (lead > -1) {
   const v = VIDEOS[lead];
@@ -357,7 +499,7 @@ if (lead > -1) {
     if (info.dur) $("#hmeta").textContent = single(v.cat) + ", " + fmtDur(info.dur);
     if (reduceMotion || saveData) return; /* the still frame is enough */
     hvideo.addEventListener("playing", () => hvideo.classList.add("on"), { once: true });
-    hvideo.src = info.bg;
+    attach(hvideo, info.bg, () => hvideo.removeAttribute("src")); /* if every file fails, the still frame stays */
     heroPlay();
   });
   new IntersectionObserver(([e]) => {
@@ -386,8 +528,8 @@ function tileHTML(v, i){
     </button>`;
   }
   return `<button class="tile" data-i="${i}" aria-label="Play ${esc(v.title)}">
-    <span class="thumb"><img alt="" hidden loading="lazy" referrerpolicy="no-referrer"></span>
-    <span class="meta"><b>${esc(v.title)}</b><span class="dur">${v.dur || ""}</span><span class="sub">${esc(subline(v) + (v.award ? ", " + v.award : ""))}</span></span>
+    <span class="thumb wait"><img alt=""><span class="dur">${v.dur || ""}</span></span>
+    <span class="meta"><b>${esc(v.title)}</b><span class="sub">${esc(subline(v))}</span>${v.award ? `<span class="aw">Winner, ${esc(v.award)}</span>` : ""}</span>
   </button>`;
 }
 
@@ -400,8 +542,13 @@ function renderGrid(){
     if (soon(v)) return;
     getX(v).then(info => {
       const tile = $(`.tile[data-i="${i}"]`);
-      if (!tile || !info) return;
-      if (info.thumb) { const img = tile.querySelector("img"); img.src = info.thumb; img.hidden = false; }
+      if (!tile) return;
+      const thumb = tile.querySelector(".thumb");
+      if (!info || !info.thumb) { thumb.classList.remove("wait"); return; }
+      const img = tile.querySelector("img");
+      img.onload = () => { img.classList.add("on"); thumb.classList.remove("wait"); };
+      img.onerror = () => thumb.classList.remove("wait");
+      img.src = info.thumb;
       if (!v.dur && info.dur) v.dur = fmtDur(info.dur);
       if (v.dur) tile.querySelector(".dur").textContent = v.dur;
     });
@@ -423,39 +570,28 @@ renderFilters();
 renderGrid();
 
 /* ---------- player ---------- */
-const player = $("#player");
-const page = [$("header.hero"), $("main"), $("footer")];
+const page = [$("header.hero"), $("main"), $(".credits")];
 let cur = -1, lastFocus = null;
 
 function fail(v){
   const fr = $("#frame");
   const info = xInfo[v.tid];
   fr.innerHTML = `<div class="fail"${info && info.thumb ? ` style="background-image:url('${esc(info.thumb)}')"` : ""}>
-    <p>This video didn't load. Check your connection and try again.</p>
-    <button class="retry" type="button">Try again</button>
+    <p>This video didn't load here. Try again, or watch it on X.</p>
+    <div><button class="retry" type="button">Try again</button><a class="retry" href="${esc(v.x)}" target="_blank" rel="noopener">Watch on X</a></div>
   </div>`;
-  fr.querySelector(".retry").onclick = () => { delete xInfo[v.tid]; delete xCache[v.tid]; openAt(VIDEOS.indexOf(v)); };
+  fr.querySelector("button.retry").onclick = () => { forget(v); openAt(VIDEOS.indexOf(v)); };
 }
 function mount(v, info){
   if (!info) return fail(v);
-  const fr = $("#frame");
   if (info.w && info.h) $("#pbox").style.setProperty("--r", (info.w / info.h).toFixed(4));
   const vid = document.createElement("video");
   vid.controls = true;
   vid.playsInline = true;
   vid.preload = "auto";
   if (info.thumb) vid.poster = info.thumb;
-  let retried = false;
-  vid.addEventListener("error", () => {
-    if (VIDEOS[cur] !== v) return;
-    if (!retried) {               /* one quiet retry, picking up where it stopped */
-      retried = true;
-      const t = vid.currentTime;
-      setTimeout(() => { vid.load(); vid.currentTime = t; vid.play().catch(() => {}); }, 800);
-    } else fail(v);
-  });
-  vid.src = info.url;
-  fr.replaceChildren(vid);
+  $("#frame").replaceChildren(vid);
+  attach(vid, info.urls, () => { if (VIDEOS[cur] === v) fail(v); });
   vid.play().catch(() => {}); /* if the browser blocks autoplay, the play button is still there */
   if (!v.dur && info.dur) v.dur = fmtDur(info.dur);
   $("#pmeta").textContent = subline(v) + (v.dur ? ", " + v.dur : "");
@@ -484,12 +620,11 @@ function openAt(i){
   hvideo.pause();
   $("#pclose").focus();
 
-  const fr = $("#frame");
   $("#pbox").style.removeProperty("--r");
   if (v.tid in xInfo) {
     mount(v, xInfo[v.tid]); /* already loaded: start right away, inside the click */
   } else {
-    fr.innerHTML = `<div class="wait">Loading video</div>`;
+    $("#frame").innerHTML = `<div class="wait">Loading video</div>`;
     getX(v).then(info => {
       if (cur === i && player.classList.contains("open")) mount(v, info);
     });
@@ -501,6 +636,7 @@ function closePlayer(){
   page.forEach(el => el.inert = false);
   $("#frame").innerHTML = "";
   document.body.style.overflow = "";
+  cur = -1;
   if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
   heroPlay();
 }
