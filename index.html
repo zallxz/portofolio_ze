@@ -333,7 +333,7 @@ const PARTNERS = [
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const X_RE = /(?:x|twitter)\.com\/([^\/?#]+)\/status\/(\d+)/i;
-$("#year").textContent = new Date().getFullYear();
+if ($("#year")) $("#year").textContent = new Date().getFullYear();
 
 /* an X post id carries its own timestamp, so the month comes for free */
 const postDate = id => {
@@ -368,26 +368,30 @@ function ordered(list, cap){
   const first = fit.length ? fit[fit.length - 1] : list[0];
   return [first, ...list.filter(x => x !== first).reverse()].map(x => x.url);
 }
-function fromFx(j){
+/* raw = { mp4:[{url,bitrate}], thumb, w, h, dur }, the same shape videos.json stores */
+function rawFx(j){
   const t = j && (j.tweet || j.status);
   const vid = t && t.media && t.media.videos && t.media.videos[0];
   if (!vid) return null;
   let list = mp4s(vid);
   if (!list.length && /\.mp4(\?|$)/i.test(vid.url || "")) list = [{ url: vid.url, bitrate: 0 }];
   if (!list.length) return null;
+  return { mp4: list.map(x => ({ url: x.url, bitrate: x.bitrate || 0 })), thumb: vid.thumbnail_url || "", w: vid.width, h: vid.height, dur: vid.duration };
+}
+function rawVx(j){
+  const m = j && (j.media_extended || []).find(x => x.type === "video" || x.type === "gif");
+  if (!m || !m.url) return null;
+  return { mp4: [{ url: m.url, bitrate: 0 }], thumb: m.thumbnail_url || "",
+    w: m.size && m.size.width, h: m.size && m.size.height, dur: m.duration_millis ? m.duration_millis / 1000 : 0 };
+}
+function build(raw){
+  if (!raw || !Array.isArray(raw.mp4) || !raw.mp4.length) return null;
+  const list = raw.mp4.filter(x => x && x.url).sort((a, b) => (a.bitrate || 0) - (b.bitrate || 0));
+  if (!list.length) return null;
   return {
     urls: ordered(list, smallScreen ? 2500000 : Infinity),
     bg: ordered(list, 2300000),
-    thumb: vid.thumbnail_url || "", w: vid.width, h: vid.height, dur: vid.duration
-  };
-}
-function fromVx(j){
-  const m = j && (j.media_extended || []).find(x => x.type === "video" || x.type === "gif");
-  if (!m || !m.url) return null;
-  return {
-    urls: [m.url], bg: [m.url], thumb: m.thumbnail_url || "",
-    w: m.size && m.size.width, h: m.size && m.size.height,
-    dur: m.duration_millis ? m.duration_millis / 1000 : 0
+    thumb: raw.thumb || "", w: raw.w, h: raw.h, dur: raw.dur
   };
 }
 function getJSON(url){
@@ -409,31 +413,46 @@ function limited(job){
 }
 
 /* results are kept for the visit, so filters and the player never refetch */
-const CACHE_V = "xv2:", TTL = 6 * 3600e3;
+const CACHE_V = "xv3:", TTL = 6 * 3600e3;
 const store = {
   get(id){ try { const o = JSON.parse(sessionStorage.getItem(CACHE_V + id)); return o && Date.now() - o.t < TTL ? o.d : null; } catch { return null; } },
   set(id, d){ try { sessionStorage.setItem(CACHE_V + id, JSON.stringify({ t: Date.now(), d })); } catch {} },
   drop(id){ try { sessionStorage.removeItem(CACHE_V + id); } catch {} }
 };
-const xCache = {}, xInfo = {};
+/* videos.json is written by the GitHub Action (.github/workflows/videos.yml) from the
+   links above, so visitors get the video files straight from this site. The live lookup
+   below is only used for a post that isn't in the file yet, or whose saved links expired. */
+const baked = getJSON("videos.json?h=" + Math.floor(Date.now() / 36e5)).then(j => j || {});
+const xCache = {}, xInfo = {}, stale = new Set();
 function getX(v){
   if (v.tid in xInfo) return Promise.resolve(xInfo[v.tid]);
-  const saved = store.get(v.tid);
-  if (saved) { xInfo[v.tid] = saved; return Promise.resolve(saved); }
   if (!xCache[v.tid]) {
-    xCache[v.tid] = limited(async () => {
-      const u = encodeURIComponent(v.user);
-      return fromFx(await getJSON(`https://api.fxtwitter.com/${u}/status/${v.tid}`))
-          || fromVx(await getJSON(`https://api.vxtwitter.com/${u}/status/${v.tid}`));
-    }).then(info => {
-      if (info) { xInfo[v.tid] = info; store.set(v.tid, info); }
+    xCache[v.tid] = (async () => {
+      let info = null;
+      if (!stale.has(v.tid)) {
+        const b = await baked;
+        info = build(b.videos && b.videos[v.tid]) || store.get(v.tid);
+      }
+      if (!info) {
+        info = build(await limited(async () => {
+          const u = encodeURIComponent(v.user);
+          return rawFx(await getJSON(`https://api.fxtwitter.com/${u}/status/${v.tid}`))
+              || rawVx(await getJSON(`https://api.vxtwitter.com/${u}/status/${v.tid}`));
+        }));
+        if (info) store.set(v.tid, info);
+      }
+      if (info) xInfo[v.tid] = info;
       delete xCache[v.tid]; /* a failure can be tried again later */
       return info;
-    });
+    })().catch(() => { delete xCache[v.tid]; return null; });
   }
   return xCache[v.tid];
 }
-function forget(v){ delete xInfo[v.tid]; delete xCache[v.tid]; store.drop(v.tid); }
+/* drop what we have for a post and look it up live next time */
+function forget(v){ delete xInfo[v.tid]; delete xCache[v.tid]; store.drop(v.tid); stale.add(v.tid); }
+
+/* one broken part of the page must never stop the others */
+function safely(name, fn){ try { fn(); } catch (e) { console.error("[izesaki] " + name + " failed:", e); } }
 
 /* plays a list of files in order, moving to the next one if a file fails */
 function attach(video, urls, onGiveUp){
@@ -454,24 +473,30 @@ Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))])
   .then(() => document.documentElement.classList.add("ready"));
 
 /* ---------- partners ---------- */
-$("#partners").innerHTML = PARTNERS.map((p, i) => `
-  <li><a class="pt" href="https://x.com/${esc(p.handle)}" target="_blank" rel="noopener">
-    <span class="av" aria-hidden="true">${esc(p.name.charAt(0))}<img alt="" data-p="${i}" loading="lazy"></span>
-    <span><b>${esc(p.name)}</b><small>@${esc(p.handle)}</small></span>
-  </a></li>`).join("");
-document.querySelectorAll("#partners img").forEach(img => {
-  const p = PARTNERS[+img.dataset.p];
-  let refreshed = false;
-  img.onerror = () => {
-    img.hidden = true;
-    if (refreshed) return;
-    refreshed = true; /* the saved photo changed on X: ask for the current one once */
-    getJSON("https://api.fxtwitter.com/" + encodeURIComponent(p.handle)).then(j => {
-      const a = j && j.user && j.user.avatar_url;
-      if (a) { img.hidden = false; img.src = a.replace("_normal", "_200x200"); }
-    });
-  };
-  img.src = p.avatar;
+safely("partners", () => {
+  const list = $("#partner, #partners, .partners ul");
+  if (!list) return;
+  list.innerHTML = PARTNERS.map((p, i) => `
+    <li><a class="pt" href="https://x.com/${esc(p.handle)}" target="_blank" rel="noopener">
+      <span class="av" aria-hidden="true">${esc(p.name.charAt(0))}<img alt="" data-p="${i}" loading="lazy"></span>
+      <span><b>${esc(p.name)}</b><small>@${esc(p.handle)}</small></span>
+    </a></li>`).join("");
+  list.querySelectorAll("img").forEach(img => {
+    const p = PARTNERS[+img.dataset.p];
+    let refreshed = false;
+    img.onerror = () => {
+      img.hidden = true;
+      if (refreshed) return;
+      refreshed = true; /* the saved photo changed on X: ask for the current one once */
+      getJSON("https://api.fxtwitter.com/" + encodeURIComponent(p.handle)).then(j => {
+        const a = j && j.user && j.user.avatar_url;
+        if (a) { img.hidden = false; img.src = a.replace("_normal", "_200x200"); }
+      });
+    };
+    img.src = p.avatar;
+    /* the Action keeps the newest photo in videos.json */
+    baked.then(b => { const a = b.avatars && b.avatars[p.handle.toLowerCase()]; if (a && a !== p.avatar) img.src = a; });
+  });
 });
 
 /* ---------- header film ---------- */
@@ -480,9 +505,9 @@ const lead = VIDEOS.findIndex(v => !soon(v));
 const hvideo = $("#hvideo");
 let heroVisible = true;
 function heroPlay(){
-  if (hvideo.getAttribute("src") && heroVisible && !player.classList.contains("open")) hvideo.play().catch(() => {});
+  if (hvideo && hvideo.getAttribute("src") && heroVisible && !player.classList.contains("open")) hvideo.play().catch(() => {});
 }
-if (lead > -1) {
+if (lead > -1) safely("header", () => {
   const v = VIDEOS[lead];
   $("#htitle").textContent = v.title;
   $("#hmeta").textContent = single(v.cat);
@@ -506,7 +531,7 @@ if (lead > -1) {
     heroVisible = e.isIntersecting;
     heroVisible ? heroPlay() : hvideo.pause();
   }).observe($("#screen"));
-}
+});
 
 /* ---------- work grid ---------- */
 const cats = ["All", ...new Set(VIDEOS.map(v => v.cat))];
@@ -555,22 +580,24 @@ function renderGrid(){
   });
 }
 
-$("#filters").addEventListener("click", e => {
-  const b = e.target.closest(".f");
-  if (!b) return;
-  active = b.dataset.c;
+safely("work grid", () => {
+  $("#filters").addEventListener("click", e => {
+    const b = e.target.closest(".f");
+    if (!b) return;
+    active = b.dataset.c;
+    renderFilters();
+    renderGrid();
+  });
+  $("#grid").addEventListener("click", e => {
+    const t = e.target.closest(".tile[data-i]");
+    if (t) openAt(+t.dataset.i);
+  });
   renderFilters();
   renderGrid();
 });
-$("#grid").addEventListener("click", e => {
-  const t = e.target.closest(".tile[data-i]");
-  if (t) openAt(+t.dataset.i);
-});
-renderFilters();
-renderGrid();
 
 /* ---------- player ---------- */
-const page = [$("header.hero"), $("main"), $(".credits")];
+const page = [$("header.hero"), $("main"), $(".credits"), $("body > footer")].filter(Boolean);
 let cur = -1, lastFocus = null;
 
 function fail(v){
@@ -591,7 +618,13 @@ function mount(v, info){
   vid.preload = "auto";
   if (info.thumb) vid.poster = info.thumb;
   $("#frame").replaceChildren(vid);
-  attach(vid, info.urls, () => { if (VIDEOS[cur] === v) fail(v); });
+  attach(vid, info.urls, () => {
+    if (VIDEOS[cur] !== v) return;
+    /* every saved file failed: the links may have expired, so look them up live once */
+    if (stale.has(v.tid)) return fail(v);
+    forget(v);
+    getX(v).then(fresh => { if (VIDEOS[cur] === v) fresh ? mount(v, fresh) : fail(v); });
+  });
   vid.play().catch(() => {}); /* if the browser blocks autoplay, the play button is still there */
   if (!v.dur && info.dur) v.dur = fmtDur(info.dur);
   $("#pmeta").textContent = subline(v) + (v.dur ? ", " + v.dur : "");
@@ -617,7 +650,7 @@ function openAt(i){
   player.setAttribute("aria-hidden", "false");
   page.forEach(el => el.inert = true);
   document.body.style.overflow = "hidden";
-  hvideo.pause();
+  if (hvideo) hvideo.pause();
   $("#pclose").focus();
 
   $("#pbox").style.removeProperty("--r");
@@ -645,16 +678,18 @@ function step(d){
   const pos = queue.indexOf(cur);
   openAt(queue[(pos + d + queue.length) % queue.length]);
 }
-$("#pclose").onclick = closePlayer;
-player.addEventListener("click", e => { if (e.target === player) closePlayer(); });
-$("#pprev").onclick = () => step(-1);
-$("#pnext").onclick = () => step(1);
-document.addEventListener("keydown", e => {
-  if (!player.classList.contains("open")) return;
-  if (e.key === "Escape") closePlayer();
-  if (e.target.tagName === "VIDEO") return; /* let the video keep its own arrow-key seeking */
-  if (e.key === "ArrowLeft") step(-1);
-  if (e.key === "ArrowRight") step(1);
+safely("player", () => {
+  $("#pclose").onclick = closePlayer;
+  player.addEventListener("click", e => { if (e.target === player) closePlayer(); });
+  $("#pprev").onclick = () => step(-1);
+  $("#pnext").onclick = () => step(1);
+  document.addEventListener("keydown", e => {
+    if (!player.classList.contains("open")) return;
+    if (e.key === "Escape") closePlayer();
+    if (e.target.tagName === "VIDEO") return; /* let the video keep its own arrow-key seeking */
+    if (e.key === "ArrowLeft") step(-1);
+    if (e.key === "ArrowRight") step(1);
+  });
 });
 </script>
 </body>

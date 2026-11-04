@@ -1,0 +1,49 @@
+# Saves each X post's video files, thumbnail and duration to videos.json so the site
+# never depends on a third-party API when someone visits. Runs whenever index.html
+# changes, every 6 hours (X's file links can change), and on demand from the Actions tab.
+name: Refresh video data
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - scripts/fetch-videos.mjs
+      - .github/workflows/videos.yml
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-video-data
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch video data
+        run: node scripts/fetch-videos.mjs
+
+      - name: Commit videos.json if it changed
+        run: |
+          git add videos.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "videos.json is up to date"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Refresh video data"
+          git pull --rebase origin main
+          git push origin HEAD:main
