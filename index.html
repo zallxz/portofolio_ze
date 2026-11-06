@@ -340,7 +340,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 
   <section class="record" id="awards" aria-labelledby="awh">
     <div class="rhead">
-      <h2 class="sh" id="awh">Awards and recognition</h2>
+      <h2 class="sh" id="awh">Awards</h2>
       <p>Each one links to the post that backs it up.</p>
     </div>
     <ol class="rlist" id="rlist"></ol>
@@ -415,7 +415,7 @@ const VIDEOS = [
   { x:"https://x.com/izesaki/status/2114293588033232980", title:"God in the Static", cat:"Music videos" },
   { x:"https://x.com/izesaki/status/2113912084673245439", title:"The House Never Emptied", cat:"Short films" },
   { x:"https://x.com/izesaki/status/2113446943800340755", title:"The Face That Remains", cat:"Short films", spot:2,
-    note:"My longest film so far, made for PixLight 2026. Self-funded with about 10K credits. Roughly 90% Wan 3.0; I switched to Seedance 2.5 for the last shots when content filters blocked them." },
+    note:"My longest film so far, a three-minute personal project. Self-funded with about 10K credits. Roughly 90% Wan 3.0; I switched to Seedance 2.5 for the last shots when content filters blocked them." },
   { x:"https://x.com/izesaki/status/2112272459194118215", title:"AIZE Liptint", cat:"Ads" },
   { x:"https://x.com/izesaki/status/2111163548004975077", title:"Flower Fever", cat:"Music videos" },
   { x:"https://x.com/izesaki/status/2111076371724488750", title:"Aizento Time Machine", cat:"Ads" },
@@ -430,28 +430,20 @@ const VIDEOS = [
   { x:"https://x.com/izesaki/status/2098903195804406080", title:"Choose Peace (AMV)", cat:"Music videos" },
 ];
 
-/* Awards and recognition, newest first.
-   place = what you got: "Winner", "1st place", "2nd place", "3rd place", "Finalist",
-           "Honorable mention", "Selected", or "Entry" while results are pending
+/* Awards, newest first. Only placements go here.
+   place = what you got: "Winner", "1st place", "2nd place", "3rd place", "Grand prize"
    what  = the category or role, e.g. "Best UGC Ad". Leave out if there is none.
    event = the competition or program;  by = who runs it (shown as "by OpenArt")
    prize = optional, e.g. "$3,000";  date = "YYYY-MM-DD"
    film  = optional link to your X post with the film, so the award shows on that video
    proof = link to the organizer's own post that names you. This is the part that
            makes it believable, so use their post, not yours, whenever one exists.
-   more  = optional second link, e.g. the full winners announcement
-   When results come in for an "Entry", change place and add proof. */
+   more  = optional second link, e.g. the full winners announcement */
 const AWARDS = [
   { place:"Winner", what:"Best UGC Ad", event:"OpenArt Ad Awards 2026", by:"OpenArt", prize:"$3,000", date:"2026-10-15",
     film:"https://x.com/izesaki/status/2102663694824186267",
     proof:"https://x.com/openart_ai/status/2110454998132031562",
     more:"https://x.com/openart_ai/status/2110452928737583398" },
-  { place:"Entry", event:"PixLight 2026", by:"PixVerse", date:"2026-10-23",
-    film:"https://x.com/izesaki/status/2113446943800340755",
-    proof:"https://x.com/izesaki/status/2113446943800340755", proofLabel:"Submission post" },
-  { place:"Selected", what:"Official Tastemaker", event:"OpenArt Arena", by:"OpenArt", date:"2026-09-16",
-    proof:"https://x.com/izesaki/status/2099924498187493696", proofLabel:"Post",
-    more:"https://openart.ai/arena", moreLabel:"Arena rankings" },
 ];
 
 /* Partners: handle = X username. The photo is refreshed from X automatically if it changes. */
