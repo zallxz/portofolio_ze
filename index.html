@@ -160,10 +160,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));
+  /* 3, 2 or 1 columns: all divide 6, so a page of films always ends on a full row */
+  grid-template-columns:repeat(3,minmax(0,1fr));
   gap:44px 20px;
   padding:32px var(--pad) 0;
 }
+@media (max-width:1040px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.grid{grid-template-columns:1fr}}
 .tile{display:flex;flex-direction:column;gap:12px;width:100%}
 .thumb{position:relative;display:block;aspect-ratio:16/9;overflow:hidden;background:var(--raise)}
 .thumb.wait::before{content:"";position:absolute;inset:0;
