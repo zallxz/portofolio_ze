@@ -317,11 +317,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
   <div class="screen" id="screen">
     <img id="hposter" alt="">
     <video id="hvideo" muted loop playsinline preload="none" aria-hidden="true"></video>
-    <h1 class="title">izesaki</h1>
+    <h1 class="title" translate="no">izesaki</h1>
     <button class="play" id="hplay" hidden>
       <span class="pl">
         <svg viewBox="0 0 38 38" aria-hidden="true"><circle cx="19" cy="19" r="18"/><path d="M15.5 12.5l10 6.5-10 6.5z"/></svg>
-        <span><em>Latest film</em><b id="htitle"></b><small id="hmeta"></small></span>
+        <span><em>Latest film</em><b id="htitle" translate="no"></b><small id="hmeta"></small></span>
       </span>
     </button>
   </div>
@@ -379,7 +379,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 <div class="player" id="player" role="dialog" aria-modal="true" aria-labelledby="ptitle" aria-hidden="true">
  <div class="pbox" id="pbox">
   <div class="pbar">
-    <div><h2 id="ptitle"></h2><p id="pmeta"></p><div class="paward" id="paward" hidden></div></div>
+    <div><h2 id="ptitle" translate="no"></h2><p id="pmeta"></p><div class="paward" id="paward" hidden></div></div>
     <div class="pact">
       <a class="pext" id="pext" href="#" target="_blank" rel="noopener">Open on X</a>
       <button class="ib" id="pclose" aria-label="Close video"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
@@ -702,7 +702,7 @@ function tileHTML(v, i){
   }
   return `<button class="tile" data-i="${i}" aria-label="Play ${esc(v.title)}">
     <span class="thumb wait"><img alt=""><span class="dur">${v.dur || ""}</span></span>
-    <span class="meta"><b>${esc(v.title)}</b><span class="sub">${esc(subline(v))}</span>${v.award ? `<span class="aw${v.award.won ? "" : " dim"}">${esc(v.award.label)}</span>` : ""}</span>
+    <span class="meta"><b translate="no">${esc(v.title)}</b><span class="sub">${esc(subline(v))}</span>${v.award ? `<span class="aw${v.award.won ? "" : " dim"}">${esc(v.award.label)}</span>` : ""}</span>
   </button>`;
 }
 
@@ -764,7 +764,7 @@ safely("spotlight", () => {
     const placeLine = a ? (a.won ? a.place : `${a.place}, ${a.event}${a.by ? " by " + a.by : ""}`) : single(v.cat);
     const ev = headIsAward ? `<p class="fev"><b>${esc(a.event)}</b>${a.by ? ` by ${esc(a.by)}` : ""}${a.prize ? `, ${esc(a.prize)} prize` : ""}</p>` : "";
     const facts = [
-      headIsAward ? `<span>Film <b>${esc(v.title)}</b></span>` : "",
+      headIsAward ? `<span>Film <b translate="no">${esc(v.title)}</b></span>` : "",
       `<span>${esc(single(v.cat))}</span>`,
       `<span class="sd" data-i="${i}">${esc(v.dur || "")}</span>`,
       `<span>${esc(v.date || "")}</span>`
@@ -780,7 +780,7 @@ safely("spotlight", () => {
       </button>
       <div class="ftext">
         <p class="place${a && a.won ? " won" : ""}">${esc(placeLine)}</p>
-        <h3 class="fh">${esc(headIsAward ? a.what : v.title)}</h3>
+        <h3 class="fh" translate="${headIsAward ? "yes" : "no"}">${esc(headIsAward ? a.what : v.title)}</h3>
         ${ev}
         <p class="facts">${facts}</p>
         ${v.note ? `<p class="fnote">${esc(v.note)}</p>` : ""}
@@ -824,7 +824,7 @@ safely("awards", () => {
   if (!AWARDS.length) { $("#awards").hidden = true; return; }
   $("#rlist").innerHTML = AWARDS.map(a => {
     const vi = a.tid ? VIDEOS.findIndex(v => v.tid === a.tid) : -1;
-    const film = vi > -1 ? ` <span>for</span> <button type="button" data-i="${vi}">${esc(VIDEOS[vi].title)}</button>` : "";
+    const film = vi > -1 ? ` <span>for</span> <button type="button" data-i="${vi}" translate="no">${esc(VIDEOS[vi].title)}</button>` : "";
     return `<li class="row">
       <span class="rp${a.won ? "" : " dim"}">${esc(a.place)}</span>
       <span class="rw"><b>${esc(a.what ? a.what + ", " + a.event : a.event)}</b><span>${a.by ? "by " + esc(a.by) : ""}</span>${film}</span>
