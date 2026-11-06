@@ -64,8 +64,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .jump a{text-decoration:none}
 .jump a:hover{color:var(--cinema-text)}
 .socials{display:flex;gap:22px;font-weight:600}
-.socials a,.laurel{text-decoration:none}
-.socials a:hover,.laurel:hover b{text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1.5px}
+.socials a{text-decoration:none}
+.socials a:hover{text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1.5px}
 
 .screen{position:relative;height:calc(100vw / 2.39);max-height:calc(100vh - 230px);min-height:300px;overflow:hidden;background:var(--cinema)}
 @supports (height:100svh){.screen{max-height:calc(100svh - 230px)}}
@@ -102,9 +102,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 /* the bio sits in the lower bar, set like burned-in subtitles */
 .subs{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:clamp(96px,14vh,140px);padding:16px var(--pad) 26px;text-align:center}
 .subs p{max-width:48ch;font-size:clamp(1rem,1.6vw,1.25rem);font-weight:500;font-stretch:96%;line-height:1.35}
-/* the one award line under the bio, set like a festival credit on a poster */
-.laurel{display:inline-flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:2px 8px;font-size:.9rem;color:var(--cinema-muted)}
-.laurel b{font-weight:700;font-stretch:118%;color:var(--cinema-text)}
 
 @media (max-width:640px){
   .jump{gap:16px;font-size:.85rem}
@@ -114,43 +111,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
   .title{font-size:21vw}
 }
 
-/* ---------- spotlight: the work worth stopping for, with the why ---------- */
 .sh{font-size:clamp(1.6rem,3.4vw,2.6rem);font-weight:800;font-stretch:118%;letter-spacing:-.03em;line-height:1}
-.spot{padding:clamp(56px,8vw,112px) var(--pad) 0}
-.feat{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(24px,5vw,72px);align-items:center;margin-top:clamp(28px,4vw,48px)}
-.feat + .feat{margin-top:clamp(64px,8vw,112px);padding-top:clamp(40px,5vw,64px);border-top:1px solid var(--line)}
-.feat.tall .media{max-width:400px;justify-self:center;width:100%}
-.feat.wide{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
-.media{position:relative;display:block;overflow:hidden;background:var(--raise);aspect-ratio:16/9;width:100%}
-.tall .media{aspect-ratio:9/16;border-radius:14px}
-.media img,.media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s}
-.media img.on,.media video.on{opacity:1}
-.media .hint{position:absolute;left:14px;bottom:12px;z-index:1;display:inline-flex;align-items:center;gap:8px;color:#fff;font-size:.85rem;font-weight:600;text-shadow:0 1px 8px rgba(0,0,0,.6)}
-.media .hint svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.5}
-.media .hint svg path{fill:currentColor;stroke:none}
-.media::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.45),transparent 35%);pointer-events:none}
-.media:focus-visible{outline:2px solid var(--text);outline-offset:4px}
-.ftext{display:flex;flex-direction:column;align-items:flex-start;gap:14px;max-width:56ch}
-.place{font-size:1rem;font-weight:600;color:var(--muted)}
-.place.won{color:var(--text)}
-.fh{font-size:clamp(2.4rem,6.2vw,5.4rem);font-weight:800;font-stretch:125%;letter-spacing:-.045em;line-height:.9}
-.fev{font-size:clamp(1.05rem,1.6vw,1.3rem);font-weight:500;font-stretch:96%;line-height:1.35}
-.fev b{font-weight:700}
-.fnote{color:var(--muted);line-height:1.6}
-.fnote cite{font-style:normal;color:var(--text);font-weight:600}
-.facts{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:.9rem;color:var(--muted)}
-.facts b{color:var(--text);font-weight:600}
-.acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border:1px solid var(--line);border-radius:999px;font-weight:600;text-decoration:none;transition:border-color .2s,background-color .2s}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border:1px solid var(--line);border-radius:999px;font-weight:600;text-decoration:none;transition:border-color .2s}
 .btn:hover{border-color:var(--text)}
-.btn.solid{background:var(--text);border-color:var(--text);color:var(--bg)}
-.btn.solid:hover{opacity:.88}
-.btn svg{width:14px;height:14px;fill:currentColor}
-@media (max-width:820px){
-  .feat,.feat.wide{grid-template-columns:1fr}
-  .feat.wide .media{order:-1}
-  .feat.tall .media{max-width:300px;justify-self:start}
-}
+.more{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:clamp(48px,6vw,72px);padding:0 var(--pad)}
+.more span{font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
 
 /* ---------- record: placement first, then what and who, then the proof ---------- */
 .record{padding:clamp(72px,9vw,128px) var(--pad) 0}
@@ -302,7 +267,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 <header class="hero" id="top">
   <div class="bar">
     <nav class="jump" aria-label="Sections">
-      <a href="#spotlight">Spotlight</a>
       <a href="#awards">Awards</a>
       <a href="#work">Work</a>
       <a href="#contact">Contact</a>
@@ -328,16 +292,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 
   <div class="subs">
     <p>Independent filmmaker working with AI. Short films, music videos, and ads that would normally need a full crew.</p>
-    <a class="laurel" id="laurel" href="#spotlight" hidden></a>
   </div>
 </header>
 
 <main>
-  <section class="spot" id="spotlight" aria-labelledby="spoth">
-    <h2 class="sh" id="spoth">Spotlight</h2>
-    <div id="spots"></div>
-  </section>
-
   <section class="record" id="awards" aria-labelledby="awh">
     <div class="rhead">
       <h2 class="sh" id="awh">Awards</h2>
@@ -350,6 +308,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
     <h2 class="sr" id="workh">Work</h2>
     <nav class="filters" id="filters" aria-label="Filter work"></nav>
     <div class="grid" id="grid"></div>
+    <div class="more" id="more" hidden>
+      <button class="btn" id="morebtn" type="button"></button>
+      <span id="morecount"></span>
+    </div>
   </section>
 </main>
 
@@ -403,10 +365,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
    The first video plays silently in the header, so put your best work first.
    Duration and date are read from the post automatically.
    A line with x:"" shows as "Coming soon".
-   spot  = optional number. Puts the video in the Spotlight section, in that order
-           (1 first), and in the Highlights tab. Write the story in "note".
-   note  = optional, the short story shown next to a spotlight video
-   hl    = optional true. Puts the video in the Highlights tab without a spotlight.
+   hl    = optional true. Puts the video in the Highlights tab. Award winners go
+           there on their own.
+   Order doesn't matter for the grid: each tab shows the newest first, 6 at a time.
    Awards are listed in AWARDS below and linked to a video by its post link.
 ======================================== */
 const VIDEOS = [
@@ -420,8 +381,7 @@ const VIDEOS = [
   { x:"https://x.com/izesaki/status/2111076371724488750", title:"Aizento Time Machine", cat:"Ads" },
   { x:"https://x.com/izesaki/status/2109753291492270490", title:"All Eyes to Kalimantan", cat:"Short films" },
   { x:"https://x.com/izesaki/status/2106090261277515884", title:"Hazl", cat:"Ads" },
-  { x:"https://x.com/izesaki/status/2102663694824186267", title:"AIZE Remnant", cat:"Ads", spot:1,
-    note:"An idol walks off stage and vlogs her way back to the dressing room, spraying the perfume mid-sentence like a habit. The dialogue is messy on purpose, so it reads as a vlog first and an ad second. It's two 30-second Wan 3.0 takes joined on the last frame, so it plays as one unbroken minute." },
+  { x:"https://x.com/izesaki/status/2102663694824186267", title:"AIZE Remnant", cat:"Ads" },
   { x:"https://x.com/izesaki/status/2101740798647935385", title:"The Last Piece", cat:"Short films" },
   { x:"https://x.com/izesaki/status/2100299004689215532", title:"Handphone", cat:"Ads" },
   { x:"https://x.com/izesaki/status/2099904225027543415", title:"C1: See It Differently", cat:"Ads" },
@@ -478,7 +438,7 @@ AWARDS.forEach(a => {
   const v = a.tid && VIDEOS.find(v => v.tid === a.tid);
   if (v && !v.award) v.award = a;
 });
-const isHL = v => !!(v.spot || v.hl || (v.award && v.award.won));
+const isHL = v => !!(v.hl || (v.award && v.award.won));
 const soon = v => !v.tid;
 const single = c => c.replace(/s$/, "");
 const subline = v => [single(v.cat), v.date].filter(Boolean).join(", ");
@@ -697,11 +657,31 @@ function tileHTML(v, i){
   </button>`;
 }
 
-function renderGrid(){
-  const list = VIDEOS.map((v, i) => i).filter(i => inCat(VIDEOS[i], active));
-  queue = list.filter(i => !soon(VIDEOS[i]));
-  $("#grid").innerHTML = list.map(i => tileHTML(VIDEOS[i], i)).join("");
-  list.forEach(i => {
+/* each tab shows the newest posts first, PAGE at a time; an X post id grows with time */
+const PAGE = 6;
+let shown = PAGE, list = [];
+const newest = (a, b) => {
+  const x = VIDEOS[a].tid, y = VIDEOS[b].tid;
+  if (!x || !y) return x ? -1 : y ? 1 : a - b; /* "coming soon" goes last */
+  return x.length !== y.length ? y.length - x.length : y < x ? -1 : y > x ? 1 : 0;
+};
+function renderMore(){
+  const left = list.length - shown;
+  $("#more").hidden = left <= 0;
+  $("#morebtn").textContent = `Show ${Math.min(PAGE, left)} more`;
+  $("#morecount").textContent = `${Math.min(shown, list.length)} of ${list.length}`;
+}
+function renderGrid(append){
+  if (!append) {
+    list = VIDEOS.map((v, i) => i).filter(i => inCat(VIDEOS[i], active)).sort(newest);
+    queue = list.filter(i => !soon(VIDEOS[i])); /* the player still steps through the whole tab */
+  }
+  const from = append ? shown - PAGE : 0;
+  const page = list.slice(from, shown);
+  const html = page.map(i => tileHTML(VIDEOS[i], i)).join("");
+  if (append) $("#grid").insertAdjacentHTML("beforeend", html); else $("#grid").innerHTML = html;
+  renderMore();
+  page.forEach(i => {
     const v = VIDEOS[i];
     if (soon(v)) return;
     getX(v).then(info => {
@@ -724,8 +704,16 @@ safely("work grid", () => {
     const b = e.target.closest(".f");
     if (!b) return;
     active = b.dataset.c;
+    shown = PAGE;
     renderFilters();
     renderGrid();
+  });
+  $("#morebtn").addEventListener("click", () => {
+    const first = list[shown];
+    shown += PAGE;
+    renderGrid(true);
+    const t = first != null && $(`.tile[data-i="${first}"]`);
+    if (t) t.focus({ preventScroll: true }); /* keyboard users land on the first new film */
   });
   $("#grid").addEventListener("click", e => {
     const t = e.target.closest(".tile[data-i]");
@@ -733,81 +721,6 @@ safely("work grid", () => {
   });
   renderFilters();
   renderGrid();
-});
-
-/* ---------- award line under the bio ---------- */
-safely("laurel", () => {
-  const top = AWARDS.find(a => a.won);
-  if (!top) return;
-  const l = $("#laurel");
-  l.innerHTML = `<b>${esc(top.label)}</b><span>${esc(top.event)}${top.prize ? ", " + esc(top.prize) : ""}</span>`;
-  l.hidden = false;
-});
-
-/* ---------- spotlight ---------- */
-const PLAY_SVG = `<svg viewBox="0 0 38 38" aria-hidden="true"><circle cx="19" cy="19" r="18"/><path d="M15.5 12.5l10 6.5-10 6.5z"/></svg>`;
-safely("spotlight", () => {
-  const picks = VIDEOS.map((v, i) => ({ v, i })).filter(o => o.v.spot && !soon(o.v)).sort((a, b) => a.v.spot - b.v.spot);
-  if (!picks.length) { $("#spotlight").hidden = true; return; }
-  $("#spots").innerHTML = picks.map(({ v, i }) => {
-    const a = v.award;
-    const headIsAward = a && a.won && a.what;
-    const placeLine = a ? (a.won ? a.place : `${a.place}, ${a.event}${a.by ? " by " + a.by : ""}`) : single(v.cat);
-    const ev = headIsAward ? `<p class="fev"><b>${esc(a.event)}</b>${a.by ? ` by ${esc(a.by)}` : ""}${a.prize ? `, ${esc(a.prize)} prize` : ""}</p>` : "";
-    const facts = [
-      headIsAward ? `<span>Film <b translate="no">${esc(v.title)}</b></span>` : "",
-      `<span>${esc(single(v.cat))}</span>`,
-      `<span class="sd" data-i="${i}">${esc(v.dur || "")}</span>`,
-      `<span>${esc(v.date || "")}</span>`
-    ].join("");
-    const links = a ? [
-      a.proof ? `<a class="btn" href="${esc(a.proof)}" target="_blank" rel="noopener">${esc(a.proofLabel || "Official announcement")}</a>` : "",
-      a.more ? `<a class="btn" href="${esc(a.more)}" target="_blank" rel="noopener">${esc(a.moreLabel || "All winners")}</a>` : ""
-    ].join("") : `<a class="btn" href="${esc(v.x)}" target="_blank" rel="noopener">Open on X</a>`;
-    return `<article class="feat" data-i="${i}">
-      <button class="media" data-i="${i}" aria-label="Play ${esc(v.title)}">
-        <img alt=""><video muted loop playsinline preload="none" aria-hidden="true"></video>
-        <span class="hint">${PLAY_SVG}Watch</span>
-      </button>
-      <div class="ftext">
-        <p class="place${a && a.won ? " won" : ""}">${esc(placeLine)}</p>
-        <h3 class="fh" translate="${headIsAward ? "yes" : "no"}">${esc(headIsAward ? a.what : v.title)}</h3>
-        ${ev}
-        <p class="facts">${facts}</p>
-        ${v.note ? `<p class="fnote">${esc(v.note)}</p>` : ""}
-        <div class="acts"><button class="btn solid" data-i="${i}">${PLAY_SVG.replace("<svg", '<svg style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2"')}Watch the film</button>${links}</div>
-      </div>
-    </article>`;
-  }).join("");
-
-  $("#spots").addEventListener("click", e => {
-    const b = e.target.closest("button[data-i]");
-    if (b) openAt(+b.dataset.i);
-  });
-
-  const io = "IntersectionObserver" in window && !reduceMotion && !saveData
-    ? new IntersectionObserver(es => es.forEach(e => {
-        const vid = e.target.querySelector("video");
-        if (!vid.getAttribute("src")) return;
-        e.isIntersecting && !player.classList.contains("open") ? vid.play().catch(() => {}) : vid.pause();
-      }), { threshold: .35 })
-    : null;
-
-  picks.forEach(({ v, i }) => getX(v).then(info => {
-    const art = $(`.feat[data-i="${i}"]`);
-    if (!art || !info) return;
-    const tall = info.w && info.h && info.h > info.w;
-    art.classList.add(tall ? "tall" : "wide");
-    if (!v.dur && info.dur) v.dur = fmtDur(info.dur);
-    const sd = art.querySelector(".sd"); if (sd) sd.textContent = v.dur || "";
-    const img = art.querySelector("img");
-    if (info.thumb) { img.onload = () => img.classList.add("on"); img.src = info.thumb; }
-    if (!io) return;
-    const vid = art.querySelector("video");
-    vid.addEventListener("playing", () => vid.classList.add("on"), { once: true });
-    attach(vid, info.bg, () => vid.removeAttribute("src"));
-    io.observe(art.querySelector(".media"));
-  }));
 });
 
 /* ---------- awards record ---------- */
@@ -884,7 +797,6 @@ function openAt(i){
   page.forEach(el => el.inert = true);
   document.body.style.overflow = "hidden";
   if (hvideo) hvideo.pause();
-  document.querySelectorAll(".media video").forEach(x => x.pause());
   $("#pclose").focus();
 
   $("#pbox").style.removeProperty("--r");
@@ -906,10 +818,6 @@ function closePlayer(){
   cur = -1;
   if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
   heroPlay();
-  document.querySelectorAll(".media video[src]").forEach(x => {
-    const r = x.getBoundingClientRect();
-    if (r.bottom > 0 && r.top < innerHeight) x.play().catch(() => {});
-  });
 }
 function step(d){
   if (queue.length < 2) return;
