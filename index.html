@@ -6,7 +6,13 @@
 <!-- FIX: X's video CDN refuses media requests that carry this site's Referer. Without this line no video plays. -->
 <meta name="referrer" content="no-referrer">
 <title>izesaki, AI filmmaker</title>
-<meta name="description" content="Independent AI filmmaker making short films, music videos, and ads.">
+<meta name="description" content="Independent AI filmmaker making short films, music videos, and ads. Winner, Best UGC Ad at the OpenArt Ad Awards 2026.">
+<meta property="og:title" content="izesaki, AI filmmaker">
+<meta property="og:description" content="Short films, music videos, and ads made with AI. Winner, Best UGC Ad at the OpenArt Ad Awards 2026.">
+<meta property="og:url" content="https://izesaki.xyz/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:creator" content="@izesaki">
 <meta name="theme-color" content="#000000">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,11 +60,12 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 /* ---------- hero: a letterboxed frame, the lead film plays in the picture area ---------- */
 .hero{background:var(--cinema);color:var(--cinema-text)}
 .bar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:0 var(--pad);min-height:clamp(52px,8vh,84px);font-size:.9rem}
-.bar .note{display:inline-flex;align-items:center;gap:10px;color:var(--cinema-muted)}
-.bar .note i{width:7px;height:7px;border-radius:50%;background:#3ddc84;box-shadow:0 0 0 3px rgba(61,220,132,.18)}
+.jump{display:flex;gap:22px;color:var(--cinema-muted)}
+.jump a{text-decoration:none}
+.jump a:hover{color:var(--cinema-text)}
 .socials{display:flex;gap:22px;font-weight:600}
-.socials a{text-decoration:none}
-.socials a:hover{text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1.5px}
+.socials a,.laurel{text-decoration:none}
+.socials a:hover,.laurel:hover b{text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1.5px}
 
 .screen{position:relative;height:calc(100vw / 2.39);max-height:calc(100vh - 230px);min-height:300px;overflow:hidden;background:var(--cinema)}
 @supports (height:100svh){.screen{max-height:calc(100svh - 230px)}}
@@ -93,17 +100,83 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .play:hover .pl b{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px}
 
 /* the bio sits in the lower bar, set like burned-in subtitles */
-.subs{display:flex;align-items:center;justify-content:center;min-height:clamp(96px,14vh,140px);padding:16px var(--pad) 24px;text-align:center}
+.subs{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:clamp(96px,14vh,140px);padding:16px var(--pad) 26px;text-align:center}
 .subs p{max-width:48ch;font-size:clamp(1rem,1.6vw,1.25rem);font-weight:500;font-stretch:96%;line-height:1.35}
+/* the one award line under the bio, set like a festival credit on a poster */
+.laurel{display:inline-flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:2px 8px;font-size:.9rem;color:var(--cinema-muted)}
+.laurel b{font-weight:700;font-stretch:118%;color:var(--cinema-text)}
 
 @media (max-width:640px){
-  .bar .note{display:none}
-  .bar{justify-content:flex-end}
+  .jump{gap:16px;font-size:.85rem}
+  .jump a[href="#contact"]{display:none}
+  .socials{gap:14px;font-size:.85rem}
   .screen{height:auto;aspect-ratio:1;max-height:none;min-height:0}
   .title{font-size:21vw}
 }
 
+/* ---------- spotlight: the work worth stopping for, with the why ---------- */
+.sh{font-size:clamp(1.6rem,3.4vw,2.6rem);font-weight:800;font-stretch:118%;letter-spacing:-.03em;line-height:1}
+.spot{padding:clamp(56px,8vw,112px) var(--pad) 0}
+.feat{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(24px,5vw,72px);align-items:center;margin-top:clamp(28px,4vw,48px)}
+.feat + .feat{margin-top:clamp(64px,8vw,112px);padding-top:clamp(40px,5vw,64px);border-top:1px solid var(--line)}
+.feat.tall .media{max-width:400px;justify-self:center;width:100%}
+.feat.wide{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
+.media{position:relative;display:block;overflow:hidden;background:var(--raise);aspect-ratio:16/9;width:100%}
+.tall .media{aspect-ratio:9/16;border-radius:14px}
+.media img,.media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s}
+.media img.on,.media video.on{opacity:1}
+.media .hint{position:absolute;left:14px;bottom:12px;z-index:1;display:inline-flex;align-items:center;gap:8px;color:#fff;font-size:.85rem;font-weight:600;text-shadow:0 1px 8px rgba(0,0,0,.6)}
+.media .hint svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.5}
+.media .hint svg path{fill:currentColor;stroke:none}
+.media::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.45),transparent 35%);pointer-events:none}
+.media:focus-visible{outline:2px solid var(--text);outline-offset:4px}
+.ftext{display:flex;flex-direction:column;align-items:flex-start;gap:14px;max-width:56ch}
+.place{font-size:1rem;font-weight:600;color:var(--muted)}
+.place.won{color:var(--text)}
+.fh{font-size:clamp(2.4rem,6.2vw,5.4rem);font-weight:800;font-stretch:125%;letter-spacing:-.045em;line-height:.9}
+.fev{font-size:clamp(1.05rem,1.6vw,1.3rem);font-weight:500;font-stretch:96%;line-height:1.35}
+.fev b{font-weight:700}
+.fnote{color:var(--muted);line-height:1.6}
+.fnote cite{font-style:normal;color:var(--text);font-weight:600}
+.facts{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:.9rem;color:var(--muted)}
+.facts b{color:var(--text);font-weight:600}
+.acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border:1px solid var(--line);border-radius:999px;font-weight:600;text-decoration:none;transition:border-color .2s,background-color .2s}
+.btn:hover{border-color:var(--text)}
+.btn.solid{background:var(--text);border-color:var(--text);color:var(--bg)}
+.btn.solid:hover{opacity:.88}
+.btn svg{width:14px;height:14px;fill:currentColor}
+@media (max-width:820px){
+  .feat,.feat.wide{grid-template-columns:1fr}
+  .feat.wide .media{order:-1}
+  .feat.tall .media{max-width:300px;justify-self:start}
+}
+
+/* ---------- record: placement first, then what and who, then the proof ---------- */
+.record{padding:clamp(72px,9vw,128px) var(--pad) 0}
+.rhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px 24px;padding-bottom:18px;border-bottom:2px solid var(--text)}
+.rhead p{color:var(--muted);font-size:.95rem}
+.rlist{list-style:none}
+.row{display:grid;grid-template-columns:10rem minmax(0,1fr) 8rem 11rem;gap:6px 28px;align-items:baseline;padding:20px 0;border-bottom:1px solid var(--line)}
+.row .rp{font-weight:800;font-stretch:118%;font-size:1.15rem;letter-spacing:-.01em}
+.row .rp.dim{font-weight:600;font-stretch:100%;color:var(--muted);font-size:1rem}
+.row .rw b{display:block;font-weight:600;font-size:1.05rem;line-height:1.3}
+.row .rw span{font-size:.9rem;color:var(--muted)}
+.row .rw button{font-size:.9rem;color:var(--text);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.row .rz{font-variant-numeric:tabular-nums;font-weight:600}
+.row .rz small{display:block;font-weight:400;font-size:.85rem;color:var(--muted)}
+.row .rl{display:flex;flex-direction:column;align-items:flex-end;gap:2px;font-size:.9rem;white-space:nowrap}
+.row .rl a{text-underline-offset:4px}
+.row .rl a.minor{color:var(--muted)}
+@media (max-width:720px){
+  .row{grid-template-columns:1fr auto;padding:18px 0}
+  .row .rp{grid-column:1/-1}
+  .row .rw{grid-column:1/-1}
+  .row .rl{align-items:flex-end}
+}
+
 /* ---------- work ---------- */
+#work{margin-top:clamp(72px,9vw,128px)}
 .filters{
   position:sticky;top:0;z-index:30;
   display:flex;gap:28px;
@@ -116,6 +189,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .f:hover{color:var(--text)}
 .f[aria-pressed="true"]{color:var(--text);text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:7px}
 .f span{margin-left:6px;font-size:.8em;font-variant-numeric:tabular-nums;color:var(--muted)}
+.f.hl{font-weight:700;font-stretch:112%}
+.f.hl::before{content:"";display:inline-block;width:7px;height:7px;margin-right:8px;border-radius:50%;background:currentColor;vertical-align:.12em}
+.filters .sep{flex:none;width:1px;background:var(--line);margin:2px -6px}
 
 .grid{
   display:grid;
@@ -137,7 +213,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .meta{display:flex;flex-direction:column;gap:2px}
 .meta b{font-weight:600;font-size:1.05rem;line-height:1.25}
 .meta .sub{font-size:.85rem;color:var(--muted)}
-.meta .aw{font-size:.85rem;font-weight:500}
+.meta .aw{font-size:.85rem;font-weight:700;font-stretch:110%}
+.meta .aw.dim{font-weight:500;font-stretch:100%;color:var(--muted)}
 .tile[disabled]{cursor:default}
 .tile[disabled] b{color:var(--muted)}
 .tile:focus-visible{outline:none}
@@ -150,6 +227,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 /* ---------- end credits: the page closes the way it opened, on black ---------- */
 .credits{margin-top:clamp(96px,12vw,160px);background:var(--cinema);color:var(--cinema-text);text-align:center}
 .cta{padding:clamp(80px,11vw,140px) var(--pad) 0}
+.open{display:inline-flex;align-items:center;gap:10px;margin-bottom:22px;font-size:.9rem;color:var(--cinema-muted)}
+.open i{width:7px;height:7px;border-radius:50%;background:#3ddc84;box-shadow:0 0 0 3px rgba(61,220,132,.18)}
 .cta h2{max-width:15ch;margin:0 auto;font-size:clamp(2.2rem,6.4vw,5rem);font-weight:800;font-stretch:118%;line-height:.96;letter-spacing:-.04em}
 .cta p{max-width:44ch;margin:20px auto 0;color:var(--cinema-muted)}
 .links{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:32px}
@@ -205,7 +284,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .pact{display:flex;align-items:center;gap:12px;flex:none}
 .pext{font-size:.85rem;color:var(--cinema-muted);text-underline-offset:4px}
 .pext:hover{color:var(--cinema-text)}
-.paward{display:inline-block;margin-top:2px;font-size:.85rem;color:var(--cinema-text);text-underline-offset:4px;text-decoration-thickness:1px}
+.paward{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:3px;font-size:.85rem;color:var(--cinema-text)}
+.paward b{font-weight:700;font-stretch:110%}
+.paward a{color:var(--cinema-muted);text-underline-offset:4px;text-decoration-thickness:1px}
+.paward a:hover{color:var(--cinema-text)}
 
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
@@ -219,7 +301,12 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 
 <header class="hero" id="top">
   <div class="bar">
-    <span class="note"><i aria-hidden="true"></i>Open to commissions and collaborations</span>
+    <nav class="jump" aria-label="Sections">
+      <a href="#spotlight">Spotlight</a>
+      <a href="#awards">Awards</a>
+      <a href="#work">Work</a>
+      <a href="#contact">Contact</a>
+    </nav>
     <nav class="socials" aria-label="Social">
       <a href="https://x.com/izesaki" target="_blank" rel="noopener">X</a>
       <a href="https://www.instagram.com/izesaki" target="_blank" rel="noopener">Instagram</a>
@@ -241,17 +328,34 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 
   <div class="subs">
     <p>Independent filmmaker working with AI. Short films, music videos, and ads that would normally need a full crew.</p>
+    <a class="laurel" id="laurel" href="#spotlight" hidden></a>
   </div>
 </header>
 
 <main>
-  <h2 class="sr">Work</h2>
-  <nav class="filters" id="filters" aria-label="Filter work by category"></nav>
-  <div class="grid" id="grid"></div>
+  <section class="spot" id="spotlight" aria-labelledby="spoth">
+    <h2 class="sh" id="spoth">Spotlight</h2>
+    <div id="spots"></div>
+  </section>
+
+  <section class="record" id="awards" aria-labelledby="awh">
+    <div class="rhead">
+      <h2 class="sh" id="awh">Awards and recognition</h2>
+      <p>Each one links to the post that backs it up.</p>
+    </div>
+    <ol class="rlist" id="rlist"></ol>
+  </section>
+
+  <section id="work" aria-labelledby="workh">
+    <h2 class="sr" id="workh">Work</h2>
+    <nav class="filters" id="filters" aria-label="Filter work"></nav>
+    <div class="grid" id="grid"></div>
+  </section>
 </main>
 
-<div class="credits">
+<div class="credits" id="contact">
   <section class="cta" aria-labelledby="ctah">
+    <p class="open"><i aria-hidden="true"></i>Open to commissions and collaborations</p>
     <h2 id="ctah">Have a story that needs a crew?</h2>
     <p>Short films, music videos and ads. Send the idea, and I'll reply with how I'd make it.</p>
     <div class="links">
@@ -275,7 +379,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 <div class="player" id="player" role="dialog" aria-modal="true" aria-labelledby="ptitle" aria-hidden="true">
  <div class="pbox" id="pbox">
   <div class="pbar">
-    <div><h2 id="ptitle"></h2><p id="pmeta"></p><a class="paward" id="paward" href="#" target="_blank" rel="noopener" hidden></a></div>
+    <div><h2 id="ptitle"></h2><p id="pmeta"></p><div class="paward" id="paward" hidden></div></div>
     <div class="pact">
       <a class="pext" id="pext" href="#" target="_blank" rel="noopener">Open on X</a>
       <button class="ib" id="pclose" aria-label="Close video"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
@@ -299,27 +403,55 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
    The first video plays silently in the header, so put your best work first.
    Duration and date are read from the post automatically.
    A line with x:"" shows as "Coming soon".
-   award = optional, shown under the title on the tile
-   proof = optional link to the post that proves the award, shown in the player
+   spot  = optional number. Puts the video in the Spotlight section, in that order
+           (1 first), and in the Highlights tab. Write the story in "note".
+   note  = optional, the short story shown next to a spotlight video
+   hl    = optional true. Puts the video in the Highlights tab without a spotlight.
+   Awards are listed in AWARDS below and linked to a video by its post link.
 ======================================== */
 const VIDEOS = [
   { x:"https://x.com/izesaki/status/2115509092802502699", title:"Another Life", cat:"Short films" },
   { x:"https://x.com/izesaki/status/2115004058096554144", title:"The Last Letter", cat:"Short films" },
   { x:"https://x.com/izesaki/status/2114293588033232980", title:"God in the Static", cat:"Music videos" },
   { x:"https://x.com/izesaki/status/2113912084673245439", title:"The House Never Emptied", cat:"Short films" },
-  { x:"https://x.com/izesaki/status/2113446943800340755", title:"The Face That Remains", cat:"Short films" },
+  { x:"https://x.com/izesaki/status/2113446943800340755", title:"The Face That Remains", cat:"Short films", spot:2,
+    note:"My longest film so far, made for PixLight 2026. Self-funded with about 10K credits. Roughly 90% Wan 3.0; I switched to Seedance 2.5 for the last shots when content filters blocked them." },
   { x:"https://x.com/izesaki/status/2112272459194118215", title:"AIZE Liptint", cat:"Ads" },
   { x:"https://x.com/izesaki/status/2111163548004975077", title:"Flower Fever", cat:"Music videos" },
   { x:"https://x.com/izesaki/status/2111076371724488750", title:"Aizento Time Machine", cat:"Ads" },
   { x:"https://x.com/izesaki/status/2109753291492270490", title:"All Eyes to Kalimantan", cat:"Short films" },
   { x:"https://x.com/izesaki/status/2106090261277515884", title:"Hazl", cat:"Ads" },
-  { x:"https://x.com/izesaki/status/2102663694824186267", title:"AIZE Remnant", cat:"Ads",
-    award:"Best UGC on OpenArt", proof:"https://x.com/izesaki/status/2110455906077188266" },
+  { x:"https://x.com/izesaki/status/2102663694824186267", title:"AIZE Remnant", cat:"Ads", spot:1,
+    note:"An idol walks off stage and vlogs her way back to the dressing room, spraying the perfume mid-sentence like a habit. The dialogue is messy on purpose, so it reads as a vlog first and an ad second. It's two 30-second Wan 3.0 takes joined on the last frame, so it plays as one unbroken minute." },
   { x:"https://x.com/izesaki/status/2101740798647935385", title:"The Last Piece", cat:"Short films" },
   { x:"https://x.com/izesaki/status/2100299004689215532", title:"Handphone", cat:"Ads" },
   { x:"https://x.com/izesaki/status/2099904225027543415", title:"C1: See It Differently", cat:"Ads" },
   { x:"https://x.com/izesaki/status/2099817993312354664", title:"Blue Wind Parfum", cat:"Ads" },
   { x:"https://x.com/izesaki/status/2098903195804406080", title:"Choose Peace (AMV)", cat:"Music videos" },
+];
+
+/* Awards and recognition, newest first.
+   place = what you got: "Winner", "1st place", "2nd place", "3rd place", "Finalist",
+           "Honorable mention", "Selected", or "Entry" while results are pending
+   what  = the category or role, e.g. "Best UGC Ad". Leave out if there is none.
+   event = the competition or program;  by = who runs it (shown as "by OpenArt")
+   prize = optional, e.g. "$3,000";  date = "YYYY-MM-DD"
+   film  = optional link to your X post with the film, so the award shows on that video
+   proof = link to the organizer's own post that names you. This is the part that
+           makes it believable, so use their post, not yours, whenever one exists.
+   more  = optional second link, e.g. the full winners announcement
+   When results come in for an "Entry", change place and add proof. */
+const AWARDS = [
+  { place:"Winner", what:"Best UGC Ad", event:"OpenArt Ad Awards 2026", by:"OpenArt", prize:"$3,000", date:"2026-10-15",
+    film:"https://x.com/izesaki/status/2102663694824186267",
+    proof:"https://x.com/openart_ai/status/2110454998132031562",
+    more:"https://x.com/openart_ai/status/2110452928737583398" },
+  { place:"Entry", event:"PixLight 2026", by:"PixVerse", date:"2026-10-23",
+    film:"https://x.com/izesaki/status/2113446943800340755",
+    proof:"https://x.com/izesaki/status/2113446943800340755", proofLabel:"Submission post" },
+  { place:"Selected", what:"Official Tastemaker", event:"OpenArt Arena", by:"OpenArt", date:"2026-09-16",
+    proof:"https://x.com/izesaki/status/2099924498187493696", proofLabel:"Post",
+    more:"https://openart.ai/arena", moreLabel:"Arena rankings" },
 ];
 
 /* Partners: handle = X username. The photo is refreshed from X automatically if it changes. */
@@ -344,6 +476,18 @@ VIDEOS.forEach(v => {
   const m = String(v.x || "").match(X_RE);
   if (m) { v.user = m[1]; v.tid = m[2]; v.date = postDate(m[2]); }
 });
+/* attach each award to its video, so tiles and the player can show it */
+const WON = /^(winner|1st|2nd|3rd|grand|gold|silver|bronze|first|second|third|best)/i;
+AWARDS.forEach(a => {
+  const m = String(a.film || "").match(X_RE);
+  a.tid = m ? m[2] : "";
+  a.won = WON.test(a.place);
+  a.label = [a.place, a.what || a.event].filter(Boolean).join(", ");
+  a.when = a.date ? new Date(a.date + "T12:00:00").toLocaleDateString("en", { month: "short", year: "numeric" }) : "";
+  const v = a.tid && VIDEOS.find(v => v.tid === a.tid);
+  if (v && !v.award) v.award = a;
+});
+const isHL = v => !!(v.spot || v.hl || (v.award && v.award.won));
 const soon = v => !v.tid;
 const single = c => c.replace(/s$/, "");
 const subline = v => [single(v.cat), v.date].filter(Boolean).join(", ");
@@ -534,14 +678,18 @@ if (lead > -1) safely("header", () => {
 });
 
 /* ---------- work grid ---------- */
-const cats = ["All", ...new Set(VIDEOS.map(v => v.cat))];
+const HL = "Highlights";
+const hasHL = VIDEOS.some(isHL);
+const cats = [...(hasHL ? [HL] : []), "All", ...new Set(VIDEOS.map(v => v.cat))];
 let active = "All";
 let queue = [];
+const inCat = (v, c) => c === "All" || (c === HL ? isHL(v) : v.cat === c);
 
 function renderFilters(){
   $("#filters").innerHTML = cats.map(c => {
-    const n = c === "All" ? VIDEOS.length : VIDEOS.filter(v => v.cat === c).length;
-    return `<button class="f" aria-pressed="${c===active}" data-c="${esc(c)}">${esc(c)}<span>${n}</span></button>`;
+    const n = VIDEOS.filter(v => inCat(v, c)).length;
+    const b = `<button class="f${c === HL ? " hl" : ""}" aria-pressed="${c===active}" data-c="${esc(c)}">${esc(c)}<span>${n}</span></button>`;
+    return c === HL ? b + `<span class="sep" aria-hidden="true"></span>` : b;
   }).join("");
 }
 
@@ -554,12 +702,12 @@ function tileHTML(v, i){
   }
   return `<button class="tile" data-i="${i}" aria-label="Play ${esc(v.title)}">
     <span class="thumb wait"><img alt=""><span class="dur">${v.dur || ""}</span></span>
-    <span class="meta"><b>${esc(v.title)}</b><span class="sub">${esc(subline(v))}</span>${v.award ? `<span class="aw">Winner, ${esc(v.award)}</span>` : ""}</span>
+    <span class="meta"><b>${esc(v.title)}</b><span class="sub">${esc(subline(v))}</span>${v.award ? `<span class="aw${v.award.won ? "" : " dim"}">${esc(v.award.label)}</span>` : ""}</span>
   </button>`;
 }
 
 function renderGrid(){
-  const list = VIDEOS.map((v, i) => i).filter(i => active === "All" || VIDEOS[i].cat === active);
+  const list = VIDEOS.map((v, i) => i).filter(i => inCat(VIDEOS[i], active));
   queue = list.filter(i => !soon(VIDEOS[i]));
   $("#grid").innerHTML = list.map(i => tileHTML(VIDEOS[i], i)).join("");
   list.forEach(i => {
@@ -594,6 +742,100 @@ safely("work grid", () => {
   });
   renderFilters();
   renderGrid();
+});
+
+/* ---------- award line under the bio ---------- */
+safely("laurel", () => {
+  const top = AWARDS.find(a => a.won);
+  if (!top) return;
+  const l = $("#laurel");
+  l.innerHTML = `<b>${esc(top.label)}</b><span>${esc(top.event)}${top.prize ? ", " + esc(top.prize) : ""}</span>`;
+  l.hidden = false;
+});
+
+/* ---------- spotlight ---------- */
+const PLAY_SVG = `<svg viewBox="0 0 38 38" aria-hidden="true"><circle cx="19" cy="19" r="18"/><path d="M15.5 12.5l10 6.5-10 6.5z"/></svg>`;
+safely("spotlight", () => {
+  const picks = VIDEOS.map((v, i) => ({ v, i })).filter(o => o.v.spot && !soon(o.v)).sort((a, b) => a.v.spot - b.v.spot);
+  if (!picks.length) { $("#spotlight").hidden = true; return; }
+  $("#spots").innerHTML = picks.map(({ v, i }) => {
+    const a = v.award;
+    const headIsAward = a && a.won && a.what;
+    const placeLine = a ? (a.won ? a.place : `${a.place}, ${a.event}${a.by ? " by " + a.by : ""}`) : single(v.cat);
+    const ev = headIsAward ? `<p class="fev"><b>${esc(a.event)}</b>${a.by ? ` by ${esc(a.by)}` : ""}${a.prize ? `, ${esc(a.prize)} prize` : ""}</p>` : "";
+    const facts = [
+      headIsAward ? `<span>Film <b>${esc(v.title)}</b></span>` : "",
+      `<span>${esc(single(v.cat))}</span>`,
+      `<span class="sd" data-i="${i}">${esc(v.dur || "")}</span>`,
+      `<span>${esc(v.date || "")}</span>`
+    ].join("");
+    const links = a ? [
+      a.proof ? `<a class="btn" href="${esc(a.proof)}" target="_blank" rel="noopener">${esc(a.proofLabel || "Official announcement")}</a>` : "",
+      a.more ? `<a class="btn" href="${esc(a.more)}" target="_blank" rel="noopener">${esc(a.moreLabel || "All winners")}</a>` : ""
+    ].join("") : `<a class="btn" href="${esc(v.x)}" target="_blank" rel="noopener">Open on X</a>`;
+    return `<article class="feat" data-i="${i}">
+      <button class="media" data-i="${i}" aria-label="Play ${esc(v.title)}">
+        <img alt=""><video muted loop playsinline preload="none" aria-hidden="true"></video>
+        <span class="hint">${PLAY_SVG}Watch</span>
+      </button>
+      <div class="ftext">
+        <p class="place${a && a.won ? " won" : ""}">${esc(placeLine)}</p>
+        <h3 class="fh">${esc(headIsAward ? a.what : v.title)}</h3>
+        ${ev}
+        <p class="facts">${facts}</p>
+        ${v.note ? `<p class="fnote">${esc(v.note)}</p>` : ""}
+        <div class="acts"><button class="btn solid" data-i="${i}">${PLAY_SVG.replace("<svg", '<svg style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2"')}Watch the film</button>${links}</div>
+      </div>
+    </article>`;
+  }).join("");
+
+  $("#spots").addEventListener("click", e => {
+    const b = e.target.closest("button[data-i]");
+    if (b) openAt(+b.dataset.i);
+  });
+
+  const io = "IntersectionObserver" in window && !reduceMotion && !saveData
+    ? new IntersectionObserver(es => es.forEach(e => {
+        const vid = e.target.querySelector("video");
+        if (!vid.getAttribute("src")) return;
+        e.isIntersecting && !player.classList.contains("open") ? vid.play().catch(() => {}) : vid.pause();
+      }), { threshold: .35 })
+    : null;
+
+  picks.forEach(({ v, i }) => getX(v).then(info => {
+    const art = $(`.feat[data-i="${i}"]`);
+    if (!art || !info) return;
+    const tall = info.w && info.h && info.h > info.w;
+    art.classList.add(tall ? "tall" : "wide");
+    if (!v.dur && info.dur) v.dur = fmtDur(info.dur);
+    const sd = art.querySelector(".sd"); if (sd) sd.textContent = v.dur || "";
+    const img = art.querySelector("img");
+    if (info.thumb) { img.onload = () => img.classList.add("on"); img.src = info.thumb; }
+    if (!io) return;
+    const vid = art.querySelector("video");
+    vid.addEventListener("playing", () => vid.classList.add("on"), { once: true });
+    attach(vid, info.bg, () => vid.removeAttribute("src"));
+    io.observe(art.querySelector(".media"));
+  }));
+});
+
+/* ---------- awards record ---------- */
+safely("awards", () => {
+  if (!AWARDS.length) { $("#awards").hidden = true; return; }
+  $("#rlist").innerHTML = AWARDS.map(a => {
+    const vi = a.tid ? VIDEOS.findIndex(v => v.tid === a.tid) : -1;
+    const film = vi > -1 ? ` <span>for</span> <button type="button" data-i="${vi}">${esc(VIDEOS[vi].title)}</button>` : "";
+    return `<li class="row">
+      <span class="rp${a.won ? "" : " dim"}">${esc(a.place)}</span>
+      <span class="rw"><b>${esc(a.what ? a.what + ", " + a.event : a.event)}</b><span>${a.by ? "by " + esc(a.by) : ""}</span>${film}</span>
+      <span class="rz">${a.prize ? esc(a.prize) + `<small>${esc(a.when)}</small>` : `<small>${esc(a.when)}</small>`}</span>
+      <span class="rl">${a.proof ? `<a href="${esc(a.proof)}" target="_blank" rel="noopener">${esc(a.proofLabel || "Official announcement")}</a>` : ""}${a.more ? `<a class="minor" href="${esc(a.more)}" target="_blank" rel="noopener">${esc(a.moreLabel || "All winners")}</a>` : ""}</span>
+    </li>`;
+  }).join("");
+  $("#rlist").addEventListener("click", e => {
+    const b = e.target.closest("button[data-i]");
+    if (b) openAt(+b.dataset.i);
+  });
 });
 
 /* ---------- player ---------- */
@@ -636,10 +878,10 @@ function openAt(i){
   $("#ptitle").textContent = v.title;
   $("#pmeta").textContent = subline(v) + (v.dur ? ", " + v.dur : "");
   $("#pext").href = v.x;
-  const aw = $("#paward");
-  aw.hidden = !v.award;
-  aw.textContent = v.award ? "Winner, " + v.award : "";
-  if (v.proof) aw.href = v.proof; else aw.removeAttribute("href");
+  const aw = $("#paward"), a = v.award;
+  aw.hidden = !a;
+  aw.innerHTML = a ? `<b>${esc(a.label)}${a.what ? ", " + esc(a.event) : ""}</b>`
+    + (a.proof ? `<a href="${esc(a.proof)}" target="_blank" rel="noopener">${esc(a.proofLabel || "Official announcement")}</a>` : "") : "";
   const pos = queue.indexOf(i);
   $("#pcount").textContent = pos > -1 ? `${pos + 1} / ${queue.length}` : "";
   const multi = queue.length > 1;
@@ -651,6 +893,7 @@ function openAt(i){
   page.forEach(el => el.inert = true);
   document.body.style.overflow = "hidden";
   if (hvideo) hvideo.pause();
+  document.querySelectorAll(".media video").forEach(x => x.pause());
   $("#pclose").focus();
 
   $("#pbox").style.removeProperty("--r");
@@ -672,6 +915,10 @@ function closePlayer(){
   cur = -1;
   if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
   heroPlay();
+  document.querySelectorAll(".media video[src]").forEach(x => {
+    const r = x.getBoundingClientRect();
+    if (r.bottom > 0 && r.top < innerHeight) x.play().catch(() => {});
+  });
 }
 function step(d){
   if (queue.length < 2) return;
