@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-06T06:58:41.667Z",
+ "updated": "2026-11-07T23:29:09.954Z",
  "videos": {
   "2118450164436492431": {
    "mp4": [
@@ -320,30 +320,6 @@
    "w": 1920,
    "h": 1078,
    "dur": 122.4
-  },
-  "2100299004689215532": {
-   "mp4": [
-    {
-     "url": "https://video.twimg.com/amplify_video/2100298648408260608/vid/avc1/472x270/yLGKx_7zA_2TFo4s.mp4?tag=29",
-     "bitrate": 256000
-    },
-    {
-     "url": "https://video.twimg.com/amplify_video/2100298648408260608/vid/avc1/630x360/E4ODcG5jRWF-I2u7.mp4?tag=29",
-     "bitrate": 832000
-    },
-    {
-     "url": "https://video.twimg.com/amplify_video/2100298648408260608/vid/avc1/1260x720/hkg7q1FF8wvxg_vw.mp4?tag=29",
-     "bitrate": 2176000
-    },
-    {
-     "url": "https://video.twimg.com/amplify_video/2100298648408260608/vid/avc1/1890x1080/55ibEEwPzXgTqZ3y.mp4?tag=29",
-     "bitrate": 10368000
-    }
-   ],
-   "thumb": "https://pbs.twimg.com/amplify_video_thumb/2100298648408260608/img/VZ8Zr4dbUQjCfF-z.jpg",
-   "w": 1890,
-   "h": 1080,
-   "dur": 117.075
   },
   "2099904225027543415": {
    "mp4": [
