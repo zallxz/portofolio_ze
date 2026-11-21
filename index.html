@@ -13,6 +13,7 @@
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:creator" content="@izesaki">
+<meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#000000">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,28 +24,17 @@
 <noscript><style>.title{opacity:1!important}</style></noscript>
 <style>
 :root{
-  color-scheme:light;
-  --bg:#f3f3f1;
-  --raise:#e4e4e0;
-  --line:#d6d6d1;
-  --text:#0a0a0a;
-  --muted:#66665f;
-  /* the cinema frame and the player stay black in both modes: they are the screen */
+  color-scheme:dark;
+  --bg:#0c0c0c;
+  --raise:#191919;
+  --line:#333;
+  --text:#ededed;
+  --muted:#a3a3a3;
   --cinema:#000;
   --cinema-text:#f2f2f2;
   --cinema-muted:#9d9d9d;
   --pad:clamp(16px,3vw,40px);
   --ease:cubic-bezier(.2,.8,.2,1);
-}
-@media (prefers-color-scheme:dark){
-  :root{
-    color-scheme:dark;
-    --bg:#000;
-    --raise:#141414;
-    --line:#262626;
-    --text:#ececec;
-    --muted:#8a8a8a;
-  }
 }
 *{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none!important}
