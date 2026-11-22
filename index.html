@@ -109,31 +109,36 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 /* ---------- work ---------- */
 #work{padding-top:clamp(18px,3vw,42px)}
 .filters{
+  --filter-gap:clamp(16px,2.3vw,28px);
   position:sticky;top:0;z-index:30;
-  display:flex;gap:clamp(16px,2.3vw,28px);
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0 var(--filter-gap);
   padding:4px var(--pad);
-  overflow-x:auto;scrollbar-width:none;
   background:var(--bg);border-bottom:1px solid var(--line);
 }
-.filters::-webkit-scrollbar{display:none}
-.f{position:relative;flex:none;min-height:44px;font-weight:500;color:var(--muted);padding:4px 0}
+.filter-views{display:contents}
+.f{position:relative;min-width:0;max-width:100%;min-height:44px;overflow-wrap:anywhere;font-weight:500;color:var(--muted);padding:4px 0}
 .f:hover{color:var(--text)}
 .f[aria-pressed="true"]{color:var(--text)}
 .f[aria-pressed="true"]::after{content:"";position:absolute;inset:auto 0 3px;height:2px;background:currentColor}
 .f span{margin-left:6px;font-size:.8em;font-variant-numeric:tabular-nums;color:var(--muted)}
 .f.hl{font-weight:700;font-stretch:112%}
 .f.hl::before{content:"";display:inline-block;width:7px;height:7px;margin-right:8px;border-radius:50%;background:currentColor;vertical-align:.12em}
-.filters .sep{flex:none;width:1px;background:var(--line);margin:9px -5px}
+.f.hl span::after{content:"";position:absolute;inset-block:9px;inset-inline-end:calc(var(--filter-gap) / -2);width:1px;background:var(--line)}
+@media (max-width:32rem){
+  .filters{--filter-gap:8px}
+  .filter-views{display:flex;flex:0 0 100%;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0 var(--filter-gap)}
+  .f{font-size:.9375rem}
+  .f.hl span::after{display:none}
+}
 
 .grid{
-  display:grid;
-  /* 3, 2 or 1 columns: all divide 6, so a page of films always ends on a full row */
-  grid-template-columns:repeat(3,minmax(0,1fr));
+  --columns:3;
+  display:grid;grid-template-columns:repeat(var(--columns),minmax(0,1fr));
   gap:44px 20px;
   padding:32px var(--pad) 0;
 }
-@media (max-width:1040px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:640px){.grid{grid-template-columns:1fr}}
+@media (max-width:1040px){.grid{--columns:2}}
+@media (max-width:640px){.grid{gap:26px 12px;padding-top:20px}}
 .tile{display:flex;flex-direction:column;gap:12px;width:100%}
 .thumb{position:relative;display:block;aspect-ratio:16/9;overflow:hidden;background:var(--raise)}
 .thumb.wait::before{content:"";position:absolute;inset:0;
@@ -150,6 +155,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .meta .sub{font-size:.875rem;color:var(--muted)}
 .meta .aw{font-size:.85rem;font-weight:700;font-stretch:110%}
 .meta .aw.dim{font-weight:500;font-stretch:100%;color:var(--muted)}
+@media (max-width:640px){
+  .tile{gap:8px}
+  .meta b{font-size:1rem;overflow-wrap:anywhere}
+}
 .tile[disabled]{cursor:default}
 .tile[disabled] b{color:var(--muted)}
 .tile:focus-visible{outline:none}
@@ -333,7 +342,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
    poster = optional local cover. Without one, the thumbnail comes from X.
    mobilePoster = optional square still for the film when it leads the header.
    Highlights shows films with a winning entry in AWARDS.
-   Order doesn't matter for the grid: each tab shows the newest first, 6 at a time.
+   Each tab shows the newest films first, two rows at a time.
    Awards are listed in AWARDS below and linked to a video by its post link.
 ======================================== */
 const VIDEOS = [
@@ -594,19 +603,21 @@ if (lead > -1) safely("header", () => {
 /* ---------- work grid ---------- */
 const HL = "Highlights";
 const hasHL = VIDEOS.some(isHL);
-const cats = [...(hasHL ? [HL] : []), "All", ...new Set(VIDEOS.map(v => v.cat))];
 const filters = $("#awards");
+const grid = $("#grid");
 const anchorCategory = hash => hash === "#awards" && hasHL ? HL : "All";
 let active = anchorCategory(location.hash);
 let queue = [];
 const inCat = (v, c) => c === "All" || (c === HL ? isHL(v) : v.cat === c);
 
 function renderFilters(){
-  filters.innerHTML = cats.map(c => {
+  function button(c) {
     const n = VIDEOS.filter(v => inCat(v, c)).length;
-    const b = `<button class="f${c === HL ? " hl" : ""}" aria-pressed="${c===active}" data-c="${esc(c)}">${esc(c)}<span>${n}</span></button>`;
-    return c === HL ? b + `<span class="sep" aria-hidden="true"></span>` : b;
-  }).join("");
+    return `<button class="f${c === HL ? " hl" : ""}" aria-pressed="${c===active}" data-c="${esc(c)}">${esc(c)}<span>${n}</span></button>`;
+  }
+  const views = hasHL ? `<div class="filter-views">${button(HL)}${button("All")}</div>` : button("All");
+  const categories = [...new Set(VIDEOS.map(v => v.cat))];
+  filters.innerHTML = views + categories.map(button).join("");
 }
 
 function tileHTML(v, i){
@@ -622,29 +633,30 @@ function tileHTML(v, i){
   </button>`;
 }
 
-/* each tab shows the newest posts first, PAGE at a time; an X post id grows with time */
-const PAGE = 6;
-let shown = PAGE, list = [];
+/* Two rows per batch. The grid's CSS determines the number of columns. */
+const filmsPerPage = () => 2 * (Number(getComputedStyle(grid).getPropertyValue("--columns")) || 3);
+let pageSize = filmsPerPage();
+let shown = pageSize, list = [];
 const newest = (a, b) => {
   const x = VIDEOS[a].tid, y = VIDEOS[b].tid;
   if (!x || !y) return x ? -1 : y ? 1 : a - b; /* "coming soon" goes last */
   return x.length !== y.length ? y.length - x.length : y < x ? -1 : y > x ? 1 : 0;
 };
 function renderMore(){
-  const left = list.length - shown;
-  $("#more").hidden = left <= 0;
-  $("#morebtn").textContent = `Show ${Math.min(PAGE, left)} more`;
+  const left = Math.max(0, list.length - shown);
+  $("#more").hidden = left === 0;
+  $("#morebtn").textContent = `Show ${Math.min(pageSize, left)} more`;
   $("#morecount").textContent = `${Math.min(shown, list.length)} of ${list.length}`;
 }
-function renderGrid(append){
-  if (!append) {
+function renderGrid(keepExisting = false){
+  if (!keepExisting) {
     list = VIDEOS.map((v, i) => i).filter(i => inCat(VIDEOS[i], active)).sort(newest);
     queue = list.filter(i => !soon(VIDEOS[i])); /* the player still steps through the whole tab */
+    grid.replaceChildren();
   }
-  const from = append ? shown - PAGE : 0;
-  const page = list.slice(from, shown);
-  const html = page.map(i => tileHTML(VIDEOS[i], i)).join("");
-  if (append) $("#grid").insertAdjacentHTML("beforeend", html); else $("#grid").innerHTML = html;
+  while (grid.childElementCount > shown) grid.lastElementChild.remove();
+  const page = list.slice(grid.childElementCount, shown);
+  grid.insertAdjacentHTML("beforeend", page.map(i => tileHTML(VIDEOS[i], i)).join(""));
   renderMore();
   page.forEach(i => {
     const v = VIDEOS[i];
@@ -675,7 +687,7 @@ function renderGrid(append){
 function selectCategory(category) {
   if (category === active) return;
   active = category;
-  shown = PAGE;
+  shown = pageSize;
   filters.querySelectorAll(".f").forEach(button => {
     button.setAttribute("aria-pressed", button.dataset.c === active);
   });
@@ -694,10 +706,7 @@ safely("work grid", () => {
   $(".jump").addEventListener("click", e => {
     const link = e.target.closest("a");
     if (!link || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
-    if (link.hash === "#awards" || link.hash === "#work") {
-      selectCategory(anchorCategory(link.hash));
-      filters.scrollLeft = 0;
-    }
+    if (link.hash === "#awards" || link.hash === "#work") selectCategory(anchorCategory(link.hash));
   });
   window.addEventListener("hashchange", () => {
     const hash = location.hash;
@@ -705,17 +714,25 @@ safely("work grid", () => {
   });
   $("#morebtn").addEventListener("click", () => {
     const first = list[shown];
-    shown += PAGE;
+    shown += pageSize;
     renderGrid(true);
     const t = first != null && $(`.tile[data-i="${first}"]`);
     if (t) t.focus({ preventScroll: true }); /* keyboard users land on the first new film */
   });
-  $("#grid").addEventListener("click", e => {
+  grid.addEventListener("click", e => {
     const t = e.target.closest(".tile[data-i]");
     if (t) openAt(+t.dataset.i);
   });
   renderFilters();
   renderGrid();
+  window.addEventListener("resize", () => {
+    const nextSize = filmsPerPage();
+    if (nextSize === pageSize) return;
+    const keepVisible = shown > pageSize || grid.contains(document.activeElement) || player.classList.contains("open");
+    shown = keepVisible ? Math.ceil(shown / nextSize) * nextSize : nextSize;
+    pageSize = nextSize;
+    renderGrid(true);
+  });
 });
 
 /* ---------- player ---------- */
