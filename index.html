@@ -126,37 +126,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
   0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-3%)}
   60%{transform:translate(-2%,-1%)}80%{transform:translate(3%,3%)}100%{transform:translate(0,0)}
 }
-.subs .roles{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--cinema-muted)}
-.subs .roles li{list-style:none;display:inline-flex;align-items:center;gap:18px}
-.subs .roles li+li::before{content:"";width:3px;height:3px;border-radius:50%;background:currentColor;opacity:.6}
-
-/* ---------- recognition: the award gets its own moment before the work ---------- */
-.rec{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:clamp(20px,3vw,40px);align-items:stretch;padding:clamp(56px,7vw,96px) var(--pad) 0}
-.prize{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(18px,2.4vw,32px);align-items:center;
-  padding:clamp(22px,3vw,36px);border:1px solid var(--line);border-radius:4px;overflow:hidden;
-  background:radial-gradient(120% 140% at 0% 0%,rgba(214,178,94,.10),transparent 55%),var(--raise)}
-.laurel{width:clamp(76px,9vw,112px);height:auto;color:#d6b25e;flex:none}
-.prize .k{font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:#d6b25e;font-weight:600}
-.prize h3{margin-top:6px;font-size:clamp(1.5rem,2.8vw,2.3rem);font-weight:800;font-stretch:115%;line-height:1;letter-spacing:-.035em}
-.prize p{margin-top:8px;color:var(--muted);font-size:.95rem}
-.prize p b{color:var(--text);font-weight:600}
-.prize .acts{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:16px;font-size:.9rem;font-weight:600}
-.prize .acts button,.prize .acts a{display:inline-flex;align-items:center;gap:8px;min-height:40px;text-decoration:none}
-.prize .acts button svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.5}
-.prize .acts button svg path{fill:currentColor;stroke:none}
-.prize .acts a{color:var(--muted);text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px}
-.prize .acts a:hover,.prize .acts button:hover{color:var(--text)}
-.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--line);border-radius:4px}
-.stats div{display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding:clamp(18px,2.4vw,28px)}
-.stats div+div{border-left:1px solid var(--line)}
-.stats dt{order:2;font-size:.85rem;color:var(--muted)}
-.stats dd{font-size:clamp(2rem,4vw,3.2rem);font-weight:800;font-stretch:118%;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
-@media (max-width:900px){.rec{grid-template-columns:1fr}}
-@media (max-width:640px){.subs .roles{gap:6px 10px;font-size:.7rem;letter-spacing:.1em}.subs .roles li{gap:10px}}
-@media (max-width:480px){
-  .prize{grid-template-columns:1fr}
-  .laurel{width:64px}
-}
 
 /* ---------- work ---------- */
 #work{margin-top:clamp(56px,7vw,96px)}
@@ -225,7 +194,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 }
 
 /* ---------- end credits: the page closes the way it opened, on black ---------- */
-.credits{margin-top:clamp(96px,12vw,160px);background:var(--cinema);color:var(--cinema-text);text-align:center}
+.credits{margin-top:clamp(72px,9vw,128px);background:var(--cinema);color:var(--cinema-text);text-align:center}
 .cta{padding:clamp(80px,11vw,140px) var(--pad) 0}
 .cta .open{display:inline-flex;align-items:center;gap:10px;margin:0 auto 22px;font-size:.9rem;color:var(--cinema-muted)}
 .cta .open i{width:7px;height:7px;border-radius:50%;background:#3ddc84;box-shadow:0 0 0 3px rgba(61,220,132,.18)}
@@ -244,19 +213,20 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
   .links a.main{grid-column:1/-1}
 }
 
-.partners{margin-top:clamp(88px,11vw,140px);padding:0 var(--pad)}
-.partners h2{font-size:.95rem;font-weight:500;color:var(--cinema-muted)}
+.partners{margin-top:clamp(64px,8vw,112px);padding:0 var(--pad)}
+.partners h2{font-size:.75rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--cinema-muted)}
 .partners ul{display:flex;flex-wrap:wrap;justify-content:center;gap:18px 44px;margin-top:22px;list-style:none}
 .pt{display:inline-flex;align-items:center;gap:12px;text-decoration:none;text-align:left}
 .pt .av{position:relative;width:34px;height:34px;flex:none;border-radius:50%;overflow:hidden;background:#1d1d1d;display:grid;place-items:center;font-size:.85rem;font-weight:700;color:var(--cinema-muted)}
-.pt .av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pt .av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1);opacity:.85;transition:filter .3s,opacity .3s}
+.pt:hover .av img,.pt:focus-visible .av img{filter:none;opacity:1}
 .pt .av::after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}
 .pt span{display:flex;flex-direction:column;line-height:1.2}
 .pt b{font-weight:700;font-stretch:110%;font-size:1.05rem}
 .pt small{font-size:.8rem;color:var(--cinema-muted)}
 .pt:hover b{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px}
 
-.foot{display:flex;justify-content:space-between;gap:16px;margin-top:clamp(88px,11vw,140px);padding:22px var(--pad) 26px;border-top:1px solid #262626;font-size:.9rem;color:var(--cinema-muted);text-align:left}
+.foot{display:flex;justify-content:space-between;gap:16px;margin-top:clamp(64px,8vw,112px);padding:22px var(--pad) 26px;border-top:1px solid #262626;font-size:.9rem;color:var(--cinema-muted);text-align:left}
 .foot a{text-underline-offset:4px}
 .foot a:hover{color:var(--cinema-text)}
 
@@ -340,13 +310,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 
   <div class="subs">
     <p>I make short films, music videos, and ads with AI.</p>
-    <ul class="roles" aria-label="Formats"><li>Short films</li><li>Music videos</li><li>Ads &amp; UGC</li></ul>
   </div>
 </header>
 
 <main>
-  <section class="rec" id="recognition" aria-label="Recognition" hidden></section>
-
   <section id="work" aria-labelledby="workh">
     <div class="whead"><h2 id="workh">Selected work</h2><p id="wcount"></p></div>
     <nav class="filters" id="awards" aria-label="Filter work"></nav>
@@ -371,7 +338,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
   </section>
 
   <section class="partners" aria-labelledby="ptn">
-    <h2 id="ptn">Partners &amp; platforms I work with</h2>
+    <h2 id="ptn">Partners</h2>
     <ul id="partner"></ul>
   </section>
 
@@ -669,58 +636,8 @@ if (lead > -1) safely("header", () => {
   }).observe($("#screen"));
 });
 
-/* ---------- recognition ---------- */
+/* ---------- shared ---------- */
 const PLAY_SVG = `<svg viewBox="0 0 38 38"><circle cx="19" cy="19" r="18"/><path d="M15.5 12.5l10 6.5-10 6.5z"/></svg>`;
-/* a simple laurel wreath, drawn from leaves placed along two arcs */
-function laurel(){
-  let leaves = "";
-  for (const side of [-1, 1]) {
-    /* angles measured from the bottom of the circle, sweeping up each side */
-    for (let k = 0; k < 8; k++) {
-      const tDeg = 32 + k * 16, t = tDeg * Math.PI / 180;
-      /* each leaf follows the curve upward and leans a little outward, alternating in and out */
-      for (const [r, lean] of [[38, 28], [30, -22]]) {
-        if (r === 30 && k > 6) continue;
-        const x = 50 + side * r * Math.sin(t), y = 52 + r * Math.cos(t);
-        const deg = side * (90 - tDeg + lean);
-        const s = 1 - k * .045;
-        leaves += `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="${(3.4 * s).toFixed(2)}" ry="${(7.6 * s).toFixed(2)}" transform="rotate(${deg.toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)})"/>`;
-      }
-    }
-  }
-  return `<svg class="laurel" viewBox="0 0 100 100" aria-hidden="true"><g fill="currentColor">${leaves}</g>
-    <path d="M36 90q14 6 28 0" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>`;
-}
-safely("recognition", () => {
-  const box = $("#recognition");
-  const win = AWARDS.find(a => a.won) || AWARDS[0];
-  const films = VIDEOS.filter(v => !soon(v));
-  const formats = new Set(films.map(v => v.cat)).size;
-  const placements = AWARDS.length;
-  let html = "";
-  if (win) {
-    const vi = win.tid ? VIDEOS.findIndex(v => v.tid === win.tid) : -1;
-    const film = vi > -1 ? VIDEOS[vi] : null;
-    html += `<article class="prize">${laurel()}<div>
-      <span class="k">${esc(win.place)}${win.date ? " · " + esc(new Date(win.date).getFullYear()) : ""}</span>
-      <h3>${esc(win.what || win.event)}</h3>
-      <p>${win.what ? `<b>${esc(win.event)}</b>` : ""}${win.by && !String(win.event).includes(win.by) ? " by " + esc(win.by) : ""}${win.prize ? ` · ${esc(win.prize)} prize` : ""}</p>
-      <div class="acts">
-        ${film ? `<button type="button" data-i="${vi}">${PLAY_SVG}Watch ${esc(film.title)}</button>` : ""}
-        ${win.proof ? `<a href="${esc(win.proof)}" target="_blank" rel="noopener">Official announcement</a>` : ""}
-      </div></div></article>`;
-  }
-  html += `<dl class="stats">
-    <div><dt>Films</dt><dd>${films.length}</dd></div>
-    <div><dt>Formats</dt><dd>${formats}</dd></div>
-    <div><dt>Award${placements === 1 ? "" : "s"}</dt><dd>${placements}</dd></div>
-  </dl>`;
-  box.innerHTML = html;
-  box.hidden = false;
-  const b = box.querySelector("button[data-i]");
-  if (b) b.onclick = () => openAt(+b.dataset.i);
-});
-
 /* tiles fade up the first time they enter the screen */
 const revealer = !reduceMotion && "IntersectionObserver" in window
   ? new IntersectionObserver(es => es.forEach(e => {
