@@ -1,11 +1,16 @@
 // Reads the X post links from index.html (the VIDEOS and PARTNERS lists) and saves
 // each post's video files, thumbnail and duration to videos.json, plus each partner's
-// current profile photo. The page loads videos.json first, so visitors never depend
+// current profile photo. For a video with no poster:"..." of its own it also saves the
+// video's first frame as posters/<post id>.webp (needs ffmpeg), which the page uses
+// as the tile cover. The page loads videos.json first, so visitors never depend
 // on a third-party API being up. Run by .github/workflows/videos.yml.
 //
 //   node scripts/fetch-videos.mjs            fetch live data and update videos.json
 //   node scripts/fetch-videos.mjs --offline  parse only, print what would be fetched
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, writeFile, access, mkdir } from "node:fs/promises";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+const run = promisify(execFile);
 
 const ROOT = new URL("../", import.meta.url);
 const OUT = new URL("videos.json", ROOT);
@@ -23,10 +28,11 @@ export function parse(html) {
   const posts = [];
   const seen = new Set();
   /* only the x:"..." field of each entry; proof:"..." links point at posts without the video */
-  for (const m of block(html, "VIDEOS").matchAll(/\bx\s*:\s*["'][^"']*?(?:x|twitter)\.com\/([^\/?#"'\s]+)\/status\/(\d+)/gi)) {
-    if (seen.has(m[2])) continue;
+  for (const line of block(html, "VIDEOS").split("\n")) {
+    const m = line.match(/\bx\s*:\s*["'][^"']*?(?:x|twitter)\.com\/([^\/?#"'\s]+)\/status\/(\d+)/i);
+    if (!m || seen.has(m[2])) continue;
     seen.add(m[2]);
-    posts.push({ user: m[1], id: m[2] });
+    posts.push({ user: m[1], id: m[2], poster: /\bposter\s*:\s*["'][^"']+["']/.test(line) });
   }
   const handles = [...new Set([...block(html, "PARTNERS").matchAll(/handle\s*:\s*["']([^"']+)["']/g)].map(m => m[1]))];
   return { posts, handles };
@@ -67,6 +73,32 @@ function rawVx(j) {
     dur: m.duration_millis ? m.duration_millis / 1000 : 0 };
 }
 
+/* saves the first frame that isn't pure black (many films fade in from black) */
+async function firstFrame(raw, file) {
+  const src = raw.mp4[raw.mp4.length - 1].url;
+  for (const t of ["0", "0.1", "0.5", "1", "2"]) {
+    try {
+      const { stderr } = await run("ffmpeg", ["-hide_banner", "-y", "-ss", t, "-i", src, "-frames:v", "1",
+        "-vf", "signalstats,metadata=print:key=lavfi.signalstats.YAVG,scale=w=960:h=960:force_original_aspect_ratio=decrease:force_divisible_by=2",
+        "-c:v", "libwebp", "-quality", "82", file], { timeout: 60000 });
+      const y = Number((stderr.match(/YAVG=([\d.]+)/) || [])[1]);
+      if (!(y < 20)) return true;
+    } catch { return false; }
+  }
+  return true;
+}
+
+async function posters(posts, videos) {
+  try { await run("ffmpeg", ["-version"]); } catch { console.warn("! ffmpeg not found, skipped first-frame covers"); return; }
+  await mkdir(new URL("posters/", ROOT), { recursive: true });
+  for (const p of posts) {
+    if (p.poster || !videos[p.id]) continue;
+    const file = new URL(`posters/${p.id}.webp`, ROOT);
+    try { await access(file); continue; } catch {}
+    console.log((await firstFrame(videos[p.id], file.pathname)) ? `+ posters/${p.id}.webp` : `! ${p.id}: couldn't save the first frame`);
+  }
+}
+
 async function main() {
   const html = await readFile(new URL("index.html", ROOT), "utf8");
   const { posts, handles } = parse(html);
@@ -96,6 +128,8 @@ async function main() {
     if (a) avatars[key] = a.replace("_normal", "_200x200");
     else if (prev.avatars && prev.avatars[key]) avatars[key] = prev.avatars[key];
   }
+
+  await posters(posts, videos);
 
   const same = JSON.stringify({ videos, avatars }) === JSON.stringify({ videos: prev.videos || {}, avatars: prev.avatars || {} });
   console.log(`Videos: ${fresh} fresh, ${kept} kept from last run, ${missing} missing. Partners with photo: ${Object.keys(avatars).length}/${handles.length}`);

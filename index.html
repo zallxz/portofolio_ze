@@ -375,7 +375,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
    The first video plays silently in the header, so put your best work first.
    Duration and date are read from the post automatically.
    A line with x:"" shows as "Coming soon".
-   poster = optional local cover. Without one, the thumbnail comes from X.
+   poster = optional local cover. Without one, the page uses posters/<post id>.webp,
+            the video's first frame, which the "Refresh video data" action saves
+            automatically; until that file exists, the thumbnail comes from X.
    mobilePoster = optional square still for the film when it leads the header.
    Highlights shows films with a winning entry in AWARDS.
    Each tab shows the newest films first, six at a time.
@@ -383,16 +385,15 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 ======================================== */
 const VIDEOS = [
   { x:"https://x.com/izesaki/status/2118450164436492431", title:"RINNE PROTOCOL", cat:"Music videos", poster:"posters/rinne-protocol.webp", mobilePoster:"posters/rinne-protocol-mobile.webp" },
+  { x:"https://x.com/izesaki/status/2125851231394611204", title:"Santa's Last Delivery", cat:"Short films", poster:"posters/santas-last-delivery.webp" },
+  { x:"https://x.com/izesaki/status/2123440104501137512", title:"AIZE Proof Ladder", cat:"Ads", poster:"posters/aize-proof-ladder.webp" },
+  { x:"https://x.com/izesaki/status/2120805444117754152", title:"Father's Hour", cat:"Short films", poster:"posters/fathers-hour.webp" },
   { x:"https://x.com/izesaki/status/2118238249613476007", title:"Tokyo 2126", cat:"Short films", poster:"posters/tokyo-2126.webp" },
   { x:"https://x.com/izesaki/status/2115509092802502699", title:"Another Life", cat:"Short films", poster:"posters/another-life.webp" },
   { x:"https://x.com/izesaki/status/2115004058096554144", title:"The Last Letter", cat:"Short films", poster:"posters/the-last-letter.webp" },
   { x:"https://x.com/izesaki/status/2114293588033232980", title:"God in the Static", cat:"Music videos", poster:"posters/god-in-the-static.webp" },
-  { x:"https://x.com/izesaki/status/2113912084673245439", title:"The House Never Emptied", cat:"Short films", poster:"posters/the-house-never-emptied.webp" },
   { x:"https://x.com/izesaki/status/2113446943800340755", title:"The Face That Remains", cat:"Short films", poster:"posters/the-face-that-remains.webp" },
   { x:"https://x.com/izesaki/status/2112272459194118215", title:"AIZE Liptint", cat:"Ads", poster:"posters/aize-liptint.webp" },
-  { x:"https://x.com/izesaki/status/2111163548004975077", title:"Flower Fever", cat:"Music videos", poster:"posters/flower-fever.webp" },
-  { x:"https://x.com/izesaki/status/2109753291492270490", title:"All Eyes to Kalimantan", cat:"Short films", poster:"posters/all-eyes-to-kalimantan.webp" },
-  { x:"https://x.com/izesaki/status/2106090261277515884", title:"Hazl", cat:"Ads", poster:"posters/hazl.webp" },
   { x:"https://x.com/izesaki/status/2102663694824186267", title:"AIZE Remnant", cat:"Ads", poster:"posters/aize-remnant.webp" },
 ];
 
@@ -433,6 +434,7 @@ const postDate = id => {
 VIDEOS.forEach(v => {
   const m = String(v.x || "").match(X_RE);
   if (m) { v.user = m[1]; v.tid = m[2]; v.date = postDate(m[2]); }
+  if (!v.poster && v.tid) v.poster = `posters/${v.tid}.webp`; /* first frame, saved by scripts/fetch-videos.mjs */
 });
 /* attach each award to its video, so tiles and the player can show it */
 const WON = /^(winner|1st|first|grand prize|gold|best)\b/i;
@@ -612,7 +614,10 @@ if (lead > -1) safely("header", () => {
   const v = VIDEOS[lead];
   const poster = $("#hposter");
   if (v.mobilePoster) $("#hposter-mobile").srcset = v.mobilePoster;
-  if (v.poster) poster.src = v.poster;
+  if (v.poster) {
+    poster.addEventListener("error", () => getX(v).then(info => { if (info?.thumb) poster.src = info.thumb; }), { once: true });
+    poster.src = v.poster;
+  }
   $("#htitle").textContent = v.title;
   $("#hmeta").textContent = single(v.cat);
   $("#hplay").setAttribute("aria-label", "Play " + v.title);
@@ -792,7 +797,8 @@ let cur = -1, lastFocus = null;
 function fail(v){
   const fr = $("#frame");
   const info = xInfo[v.tid];
-  fr.innerHTML = `<div class="fail"${info && info.thumb ? ` style="background-image:url('${esc(info.thumb)}')"` : ""}>
+  const still = v.poster || (info && info.thumb);
+  fr.innerHTML = `<div class="fail"${still ? ` style="background-image:url('${esc(still)}')"` : ""}>
     <p>This video didn't load here. Try again, or watch it on X.</p>
     <div><button class="retry" type="button">Try again</button><a class="retry" href="${esc(v.x)}" target="_blank" rel="noopener">Watch on X</a></div>
   </div>`;
@@ -805,7 +811,7 @@ function mount(v, info){
   vid.controls = true;
   vid.playsInline = true;
   vid.preload = "auto";
-  if (info.thumb) vid.poster = info.thumb;
+  if (v.poster || info.thumb) vid.poster = v.poster || info.thumb;
   $("#frame").replaceChildren(vid);
   attach(vid, info.urls, () => {
     if (VIDEOS[cur] !== v) return;
