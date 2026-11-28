@@ -1,5 +1,6 @@
 # Saves each X post's video files, thumbnail and duration to videos.json so the site
-# never depends on a third-party API when someone visits. Runs whenever index.html
+# never depends on a third-party API when someone visits, plus a first-frame cover in
+# posters/ for any video without a poster of its own. Runs whenever index.html
 # changes, every 6 hours (X's file links can change), and on demand from the Actions tab.
 name: Refresh video data
 
@@ -35,15 +36,15 @@ jobs:
       - name: Fetch video data
         run: node scripts/fetch-videos.mjs
 
-      - name: Commit videos.json if it changed
+      - name: Commit videos.json and new covers if they changed
         run: |
-          git add videos.json 2>/dev/null || true
+          git add videos.json posters 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "videos.json is up to date"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Refresh video data"
+          git commit -m "Refresh video data and covers"
           git pull --rebase origin main
           git push origin HEAD:main
